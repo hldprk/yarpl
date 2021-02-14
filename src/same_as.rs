@@ -9,9 +9,9 @@ macro_rules! same_as {
 
         $visibility fn $name (string: String, index: usize) -> Result<$crate::progress::Progress, $crate::parse_error::ParseError> {
             
-            use $crate::progress::Progress;
-            use $crate::parse_error::ParseError;
-            use $crate::parser::Parser;
+            use $crate::Progress;
+            use $crate::ParseError;
+            use $crate::Parser;
 
             let name = stringify!($name);
 

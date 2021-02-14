@@ -45,10 +45,10 @@ macro_rules! repeat {
 
         $visibility fn $name ( string: String, index: usize ) -> $crate::parse_result::ParseResult {
 
-            use $crate::parser::Parser;
-            use $crate::progress::Progress;
-            use $crate::parse_error::ParseError;
-            use $crate::done::Done;
+            use $crate::Parser;
+            use $crate::Progress;
+            use $crate::ParseError;
+            use $crate::Done;
             use std::rc::Rc;
 
             let lower: usize = $lower;

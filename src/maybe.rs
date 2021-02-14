@@ -7,9 +7,9 @@ macro_rules! maybe {
 
         $visibility fn $name (string: String, index: usize) -> Result<$crate::progress::Progress, $crate::parse_error::ParseError> {
             
-            use $crate::parser::Parser;
-            use $crate::progress::Progress;
-            use $crate::done::Done;
+            use $crate::Parser;
+            use $crate::Progress;
+            use $crate::Done;
 
             let other_parser: Parser = $other_name;
 

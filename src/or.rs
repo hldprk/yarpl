@@ -19,10 +19,10 @@ macro_rules! or {
     
         $visibility fn $name (string: String, index: usize) -> $crate::parse_result::ParseResult {
             
-            use $crate::parser::Parser;
-            use $crate::progress::Progress;
-            use $crate::done::Done;
-            use $crate::parse_error::ParseError;
+            use $crate::Parser;
+            use $crate::Progress;
+            use $crate::Done;
+            use $crate::ParseError;
             use std::rc::Rc;
 
             let name: &'static str = stringify!($name);
