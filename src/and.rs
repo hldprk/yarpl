@@ -24,7 +24,7 @@ macro_rules! and {
     
     ($visibility:vis $name:ident { $($identifiers:ident;)* } ) => {
     
-        $visibility fn $name (string: String, index: usize) -> $crate::parse_result::ParseResult {
+        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
 
             use std::rc::Rc;
             use $crate::Done;

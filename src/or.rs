@@ -17,7 +17,7 @@ macro_rules! or {
     
     ($visibility:vis $name:ident { $($choices:ident;)* } ) => {
     
-        $visibility fn $name (string: String, index: usize) -> $crate::parse_result::ParseResult {
+        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
             
             use $crate::Parser;
             use $crate::Progress;

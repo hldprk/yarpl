@@ -15,7 +15,7 @@ macro_rules! not {
 
     ($visibility:vis $name:ident { $parser:ident; }) => {
         
-        $visibility fn $name(string: String, index: usize) -> $crate::parse_result::ParseResult {
+        $visibility fn $name(string: String, index: usize) -> $crate::ParseResult {
 
             use $crate::Progress;
             use $crate::ParseError;

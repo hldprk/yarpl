@@ -43,7 +43,7 @@ macro_rules! repeat {
 
     ($visibility:vis $name:ident { $to_repeat:ident; { $lower:expr , $upper:expr } } ) => { 
 
-        $visibility fn $name ( string: String, index: usize ) -> $crate::parse_result::ParseResult {
+        $visibility fn $name ( string: String, index: usize ) -> $crate::ParseResult {
 
             use $crate::Parser;
             use $crate::Progress;
