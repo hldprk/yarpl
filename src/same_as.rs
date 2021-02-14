@@ -7,7 +7,7 @@ macro_rules! same_as {
 
     ($visibility:vis $name:ident { $($other_name:ident;)+ } ) => {
 
-        $visibility fn $name (string: String, index: usize) -> Result<$crate::progress::Progress, $crate::parse_error::ParseError> {
+        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
             
             use $crate::Progress;
             use $crate::ParseError;
