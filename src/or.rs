@@ -19,15 +19,15 @@ macro_rules! or {
     
         $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
             
-            use $crate::Parser;
             use $crate::Progress;
             use $crate::Done;
             use $crate::ParseError;
+            use $crate::ParseResult;
             use std::rc::Rc;
 
             let name: &'static str = stringify!($name);
 
-            let choices: Vec<Parser> = vec![ $($choices),* ];
+            let choices: Vec<fn(String, usize) -> ParseResult> = vec![ $($choices),* ];
             
             let mut valid_choices: Vec<Progress> = vec![];
 
@@ -36,15 +36,15 @@ macro_rules! or {
 
                 if let Ok(progress) = choice(string.clone(), index) {
 
-                    valid_choices.push( Progress {
+                    valid_choices.push( Progress::Nonempty {
 
-                        offset: progress.offset,
+                        offset: progress.offset(),
 
                         done: Done::Nonterminal {
                             
                             name,
                             
-                            children: vec![Rc::from(progress.done)]
+                            children: vec![Rc::from(progress.done().unwrap())]
 
                         }
 
@@ -55,7 +55,7 @@ macro_rules! or {
             }
 
             // Sorts successes by how many characters they parsed.
-            valid_choices.sort_by(|a, b| a.offset.cmp(&b.offset));
+            valid_choices.sort_by(|a, b| a.offset().cmp(&b.offset()));
 
             // Returns the first choice if it exists ...
             if valid_choices.len() > 0 {

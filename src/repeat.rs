@@ -1,60 +1,36 @@
 
-/// Using a modified, regular-expression-like syntax, repeatedly calls another parser the number of times specified.
+/// Repeatedly calls another parser the number of times specified.
 ///
 /// ## Example
 ///
 /// ```
 /// just!(pub a { "a"; } );
 /// 
-/// repeat!(pub repeat_a_five_times { a; { 5 } } ); 
+/// repeat!(pub repeat_a_five_times { a(5, 5); } } ); 
 /// 
-/// repeat!(pub repeat_a_at_least_five_times { a; { 5, } } ); 
+/// repeat!(pub repeat_a_at_least_five_times { a( 5, usize::MAX ); } ); 
 ///
-/// repeat!(pub repeat_a_forever { a; { , } } ); 
+/// repeat!(pub repeat_a_forever { a( 1, usize::MAX ); } ); 
 ///
 /// ```
 ///
 #[macro_export]
 macro_rules! repeat {
 
-    ($visibility:vis $name:ident { $to_repeat:ident; { $lower:expr , } } )=> { 
-
-        repeat!($visibility $name { $to_repeat; { 1 , usize::MAX } } );
-
-    };
-
-    ($visibility:vis $name:ident { $to_repeat:ident; { , $upper:expr } } )=> { 
-
-        repeat!($visibility $name { $to_repeat; { 0 , $upper }});
-
-    };
-
-    ($visibility:vis $name:ident { $to_repeat:ident; { , } } )=> { 
-
-        repeat!($visibility $name { $to_repeat; { 0 , usize::MAX }});
-
-    };
-
-    ($visibility:vis $name:ident { $to_repeat:ident; { $amount:expr } } )=> { 
-
-        repeat!($visibility $name { $to_repeat; { $amount , $amount }});
-
-    };
-
-    ($visibility:vis $name:ident { $to_repeat:ident; { $lower:expr , $upper:expr } } ) => { 
+    ($visibility:vis $name:ident { $to_repeat:ident ( $lower:expr , $upper:expr ); } ) => { 
 
         $visibility fn $name ( string: String, index: usize ) -> $crate::ParseResult {
 
-            use $crate::Parser;
             use $crate::Progress;
             use $crate::ParseError;
+            use $crate::ParseResult;
             use $crate::Done;
             use std::rc::Rc;
 
             let lower: usize = $lower;
             let upper: usize = $upper;
 
-            let to_repeat: Parser = $to_repeat;
+            let to_repeat: fn(String, usize) -> ParseResult = $to_repeat;
 
             let name: &'static str = stringify!($name);
 
@@ -79,9 +55,9 @@ macro_rules! repeat {
 
                 if let Ok(progress) = result {
 
-                    children.push(Rc::from(progress.done));
+                    children.push(Rc::from(progress.done().unwrap()));
 
-                    offset += progress.offset;
+                    offset += progress.offset();
 
                     continue;
 
@@ -111,12 +87,16 @@ macro_rules! repeat {
 
             }
 
-            Ok( Progress { offset, done: Done::Nonterminal {
+            Ok( Progress::Nonempty { 
                 
-                name,
+                offset,
+                
+                done: Done::Nonterminal {
+                    
+                    name,
 
-                children
-            
+                    children
+                
             }})
 
         }

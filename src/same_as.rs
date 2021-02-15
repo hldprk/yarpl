@@ -1,5 +1,4 @@
 use crate::parse_result::ParseResult;
-use crate::parser::Parser;
 
 /// An anonymous version of [`or!`] - renames its function's [`ParseResult`] the name of its child [`Parser`].
 #[macro_export]
@@ -11,12 +10,12 @@ macro_rules! same_as {
             
             use $crate::Progress;
             use $crate::ParseError;
-            use $crate::Parser;
+            use $crate::ParseResult;
 
             let name = stringify!($name);
 
             let other_names: Vec<&'static str> = vec![ $(stringify!($other_name),)+ ];
-            let other_parsers: Vec<Parser> = vec![ $($other_name,)+ ];
+            let other_parsers: Vec<fn(String, usize) -> ParseResult> = vec![ $($other_name,)+ ];
             
             let mut valid_choices: Vec<Progress> = vec![]; 
             let mut invalid_choices: Vec<ParseError> = vec![]; 
@@ -31,11 +30,11 @@ macro_rules! same_as {
 
                     Ok(progress) => {
                         
-                        let mut done = progress.done;
+                        let mut done = progress.done().unwrap();
 
                         done.rename(name);
 
-                        valid_choices.push(Progress { offset: progress.offset, done } );
+                        valid_choices.push(Progress::Nonempty { offset: progress.offset(), done } );
 
                     }
 
@@ -57,7 +56,7 @@ macro_rules! same_as {
 
             }
 
-            valid_choices.sort_by(|a, b| a.offset.cmp(&b.offset));
+            valid_choices.sort_by(|a, b| a.offset().cmp(&b.offset()));
             invalid_choices.sort_by(|a, b| a.offset.cmp(&b.offset));
 
             if valid_choices.len() < 1 {

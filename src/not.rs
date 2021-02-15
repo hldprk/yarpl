@@ -40,7 +40,7 @@ macro_rules! not {
             }   
 
             // ... otherwise returns an empty ( but successful ) Progress.
-            Ok( Progress { offset: 0, done: Done::Empty() })
+            Ok( Progress::Empty )
  
         }
 

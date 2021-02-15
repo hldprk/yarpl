@@ -13,13 +13,11 @@ mod done;
 mod progress;
 mod parse_error;
 mod parse_result;
-mod parser;
 
 pub use done::Done;
 pub use progress::Progress;
 pub use parse_error::ParseError;
 pub use parse_result::ParseResult;
-pub use parser::Parser;
 
 #[macro_use]
 pub mod just;
@@ -53,13 +51,13 @@ mod tests {
         assert!(first("first".to_owned(), 0).is_ok());
         assert!(first("asdfasdf".to_owned(), 0).is_err());
 
-        println!("\n{}", first("first".to_owned(), 0).unwrap().done);
+        println!("\n{}", first("first".to_owned(), 0).unwrap().done().unwrap());
 
     }
 
     just!(second { "second"; });
 
-    and!(first_and_second { first; second; });
+    and!(first_and_second { first(); second(); });
 
     #[test]
     pub fn test_and () -> () {
@@ -91,18 +89,11 @@ mod tests {
 
     }
 
-    repeat!(repeat_first_none_five { first; { , 5 } });
-    repeat!(repeat_first_five_none { first; { 5 , } });
-    repeat!(repeat_first_five_exactly { first; { 5 } });
-    
+    repeat!(repeat_first_five_times { first(5, 5); });
     #[test]
     pub fn test_repeat () -> () {
 
-        assert!(repeat_first_none_five("firstfirstfirst".to_owned(), 0).is_ok());
-        assert!(repeat_first_five_none("firstfirstfirstfirstfirst".to_owned(), 0).is_ok());
-        assert!(repeat_first_five_exactly("firstfirstfirstfirstfirst".to_owned(), 0).is_ok());
-        assert!(repeat_first_five_exactly("firstfirstfirstfirst".to_owned(), 0).is_err());
-        assert!(repeat_first_five_exactly("firstfirstfirstfirstfirstfirst".to_owned(), 0).is_err());
+        assert!(repeat_first_five_times("firstfirstfirstfirstfirst".to_owned(), 0).is_ok());
 
     }
 

@@ -23,7 +23,7 @@ macro_rules! just {
 
             if string[index..].starts_with(string_to_match) {
 
-                return Ok( Progress {
+                return Ok( Progress::Nonempty {
 
                     offset: string_to_match.len(),
                     

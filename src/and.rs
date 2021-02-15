@@ -22,18 +22,18 @@
 #[macro_export]
 macro_rules! and {
     
-    ($visibility:vis $name:ident { $($identifiers:ident;)* } ) => {
+    ($visibility:vis $name:ident { $($function:ident ( ) ;)* } ) => {
     
         $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
 
             use std::rc::Rc;
             use $crate::Done;
-            use $crate::Parser;
+            use $crate::ParseResult;
             use $crate::Progress;
 
             let name: &'static str = stringify!($name);
 
-            let sequence: Vec<Parser> = vec![$($identifiers),*];
+            let sequence: Vec<fn(String, usize) -> ParseResult> = vec![$($function),*];
 
             let mut offset: usize = 0;
             
@@ -47,9 +47,9 @@ macro_rules! and {
                     
                     Ok(progress) => {
 
-                        offset += progress.offset;
+                        offset += progress.offset();
 
-                        children.push(Rc::from(progress.done));
+                        children.push(Rc::from(progress.done().unwrap()));
 
                     }
 
@@ -67,7 +67,7 @@ macro_rules! and {
 
             }
 
-            Ok( Progress {
+            Ok( Progress::Nonempty {
 
                 offset,
                 
