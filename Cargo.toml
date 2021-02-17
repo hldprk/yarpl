@@ -1,10 +1,10 @@
 [package]
 name = "yarpl"
-version = "0.0.6-pre-release"
+version = "0.0.7"
 authors = ["hldprk <hldprk@gmail.com>"]
 edition = "2018"
 description = "Yet Another Rust Parsing Library"
-keywords = ["parsing","macro","regex"]
+keywords = ["parsing","macro"]
 categories = ["parsing"]
 license = "0BSD"
 documentation = "https://docs.rs/yarpl"
