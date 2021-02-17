@@ -5,18 +5,18 @@
 /// ## Example
 ///
 /// ```
-/// just!( pub integer { "[0-9]+"; });
+/// just!( pub integer { "[0-9]+" });
 /// ```
 #[macro_export]
 macro_rules! just {
 
-    ( $visibility:vis $name:ident { $string_to_match:literal; } ) => {
+    ( $visibility:vis fn $name:ident { $string_to_match:literal } ) => {
 
-        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
+        $visibility fn $name (string: &str, index: usize) -> $crate::core::Result {
             
-            use $crate::Done;
-            use $crate::Progress;
-            use $crate::ParseError;
+            use $crate::core::Done;
+            use $crate::core::Result;
+            use $crate::core::Progress;
 
             let name: &'static str = stringify!($name);
             let string_to_match: &'static str = $string_to_match;
@@ -39,12 +39,11 @@ macro_rules! just {
 
             } 
             
-            Err( ParseError {
-
-                offset: 0,
-                name_stack: vec![ name ],
-                message: concat!("Expected \"", $string_to_match, "\".")
-
+            Err( Done::Fail {
+                
+                name,
+                done: None
+            
             })
 
         }   

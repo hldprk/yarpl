@@ -1,24 +1,23 @@
-use crate::parse_result::ParseResult;
 
-/// An anonymous version of [`or!`] - renames its function's [`ParseResult`] the name of its child [`Parser`].
+/// An anonymous version of [`or!`] - renames its function's [`Result`] the name of its child parser.
 #[macro_export]
 macro_rules! same_as {
 
-    ($visibility:vis $name:ident { $($other_name:ident;)+ } ) => {
+    ($visibility:vis fn $name:ident { $($other_name:ident();)+ } ) => {
 
-        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
+        $visibility fn $name (string: &str, index: usize) -> $crate::core::Result {
             
-            use $crate::Progress;
-            use $crate::ParseError;
-            use $crate::ParseResult;
+            use $crate::core::Done;
+            use $crate::core::Result;
+            use $crate::core::Progress;
 
             let name = stringify!($name);
 
             let other_names: Vec<&'static str> = vec![ $(stringify!($other_name),)+ ];
-            let other_parsers: Vec<fn(String, usize) -> ParseResult> = vec![ $($other_name,)+ ];
+            let other_parsers: Vec<fn(&str, usize) -> Result> = vec![ $($other_name,)+ ];
             
             let mut valid_choices: Vec<Progress> = vec![]; 
-            let mut invalid_choices: Vec<ParseError> = vec![]; 
+            let mut invalid_choices: Vec<Done> = vec![]; 
 
             let mut i = 0;
 
@@ -36,17 +35,11 @@ macro_rules! same_as {
 
                         valid_choices.push(Progress::Nonempty { offset: progress.offset(), done } );
 
-                    }
+                    },
 
-                    Err(mut error) => {
+                    Err(done) => {
 
-                        if let Some(_) = error.name_stack.pop() {
-
-                            error.name_stack.push(name);
-
-                        }
-                        
-                        invalid_choices.push(error)
+                        invalid_choices.push(done);
 
                     }
 
@@ -57,7 +50,6 @@ macro_rules! same_as {
             }
 
             valid_choices.sort_by(|a, b| a.offset().cmp(&b.offset()));
-            invalid_choices.sort_by(|a, b| a.offset.cmp(&b.offset));
 
             if valid_choices.len() < 1 {
 

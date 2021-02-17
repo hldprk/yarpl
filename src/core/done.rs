@@ -6,15 +6,22 @@ use std::fmt::Formatter;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
-/// Concrete syntax tree formed from a parsing function.
+/// Concrete syntax tree returned from a parser.
 #[derive(Debug, Clone)]
 pub enum Done {
+
+    /// Holds the name of the current failed branch and the next unsuccessful child node if there is one.
+    Fail {
+
+        name: &'static str,
+        done: Option<Box<Done>>
+
+    },
 
     /// A leaf node - holds the match from the original string as well as it's name.
     Terminal {
 
         name: &'static str,
-
         matched_string: String
 
     },
@@ -23,7 +30,6 @@ pub enum Done {
     Nonterminal {
 
         name: &'static str,
-
         children: Vec<Rc<Self>>
 
     },
@@ -39,6 +45,8 @@ impl Done {
 
         match self {
 
+            Done::Fail { name, ..} => name,
+
             Done::Terminal { name,.. } => name,
 
             Done::Nonterminal { name, ..} => name,
@@ -47,7 +55,7 @@ impl Done {
 
     }
     
-    /// Returns children of this ``Done`` if it has any.
+    /// Returns children of this [`Done`] if it has any.
     pub fn children (&self) -> Option<Vec<Rc<Done>>> {
 
         if let Done::Nonterminal { children, .. } = self {
@@ -73,7 +81,7 @@ impl Done {
 
     }
 
-    /// Returns whether this is a terminal node.
+    /// Returns whether this node is [`Done::Terminal`].
     pub fn is_terminal(&self) -> bool {
 
         if let Self::Terminal {..} = self {
@@ -85,11 +93,23 @@ impl Done {
         false
 
     }
-    
-    /// Returns whether this is a nonterminal node.
+    /// Returns whether this node is [`Done::Nonterminal`].
     pub fn is_nonterminal(&self) -> bool {
 
         if let Self::Nonterminal {..} = self {
+
+            return true;
+
+        }
+
+        false
+
+    }
+    
+    /// Returns whether this node is `Done::Fail`.
+    pub fn is_fail(&self) -> bool {
+
+        if let Self::Fail {..} = self {
 
             return true;
 
@@ -117,9 +137,8 @@ impl Done {
 
 }
 
-// These globals just help with with `Display`
+// This is just help with with `Display`
 static INDENTATION_COUNT: AtomicUsize = AtomicUsize::new(0);
-static CURRENT_CHILD_INDEX: AtomicUsize = AtomicUsize::new(0);
 
 impl std::fmt::Display for Done {
 
@@ -139,14 +158,20 @@ impl std::fmt::Display for Done {
 
         }
        
-        write!(formatter, "{}", "|- ");
+        write!(formatter, "|- ");
         
         // Writes the name of the node or "_" if empty.
-        write!(formatter, "{} ", self.name());
+        write!(formatter, "'{}' ", self.name());
 
+        if self.is_fail() { 
+
+            write!(formatter, "=> Failed!");
+
+        }
+        
         if self.matched_string().is_some() {
-
-            write!(formatter, "\"{}\"", self.matched_string().unwrap());
+            
+            write!(formatter, "=> \"{}\"", self.matched_string().unwrap());
 
         }
 
@@ -156,21 +181,15 @@ impl std::fmt::Display for Done {
             // Increments `INDENTATION_COUNT` and stores the original value.
             let original_indentation_count = INDENTATION_COUNT.fetch_add(1, Ordering::Relaxed);
             
-            let original_child_index = INDENTATION_COUNT.fetch_add(0, Ordering::Relaxed);
-
-            CURRENT_CHILD_INDEX.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |_| Some(0) );
-
             for child in self.children().unwrap() {
                 
                 write!(formatter, "{}", *child);
 
-                CURRENT_CHILD_INDEX.fetch_add(1, Ordering::Relaxed);
 
             }
 
             INDENTATION_COUNT.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |_| Some(original_indentation_count) );
 
-            CURRENT_CHILD_INDEX.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |_| Some(original_child_index) );
             
         }
 

@@ -2,7 +2,7 @@
   
 `yarpl` is Yet Another Parsing Library which uses declarative macros.
 
-Each macro uses a modified function declaration syntax and will expand to a function with the type `fn (String, usize) -> ParseResult`.
+Each macro uses a modified function declaration syntax and will expand to a function with the type `fn (&str, usize) -> Result<Progress, Done>`.
 
 # Usage
 
@@ -11,13 +11,13 @@ Each macro uses a modified function declaration syntax and will expand to a func
 For example, parsing a simple terminal symbol can be done by calling the `just!` macro like so:
     
 ```rust
-just!( pub plus { "+"; } ); 
+just!( pub plus { "+" } ); 
 ```
 
-Then, just call the function with some source `String` and an index.
+Then, just call the function with some source `&str` and an index.
 
 ```rust
-let result = plus( "+".to_owned(), 0 );
+let result = plus( "+", 0 );
 
 assert!( result.is_ok() );
 ```

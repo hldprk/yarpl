@@ -15,26 +15,26 @@
 #[macro_export]
 macro_rules! or {
     
-    ($visibility:vis $name:ident { $($choices:ident;)* } ) => {
+    ($visibility:vis fn $name:ident { $($choices:ident ( ) ;)* } ) => {
     
-        $visibility fn $name (string: String, index: usize) -> $crate::ParseResult {
+        $visibility fn $name (string: &str, index: usize) -> $crate::core::Result {
             
-            use $crate::Progress;
-            use $crate::Done;
-            use $crate::ParseError;
-            use $crate::ParseResult;
+            use $crate::core::Done;
+            use $crate::core::Result;
+            use $crate::core::Progress;
+
             use std::rc::Rc;
 
             let name: &'static str = stringify!($name);
 
-            let choices: Vec<fn(String, usize) -> ParseResult> = vec![ $($choices),* ];
+            let choices: Vec<fn(&str, usize) -> $crate::core::Result> = vec![ $($choices),* ];
             
             let mut valid_choices: Vec<Progress> = vec![];
 
             // Loops through `choices`, keeping all successful parses in 'valid_choices'.
             for choice in choices {
 
-                if let Ok(progress) = choice(string.clone(), index) {
+                if let Ok(progress) = choice(string, index) {
 
                     valid_choices.push( Progress::Nonempty {
 
@@ -57,7 +57,7 @@ macro_rules! or {
             // Sorts successes by how many characters they parsed.
             valid_choices.sort_by(|a, b| a.offset().cmp(&b.offset()));
 
-            // Returns the first choice if it exists ...
+            // Returns the most successful choice
             if valid_choices.len() > 0 {
                 
                 let result = valid_choices[0].clone();
@@ -66,16 +66,13 @@ macro_rules! or {
 
             } 
             
-            // ... otherwise return 'Err(ParseError)'.
+            // ... otherwise return 'Err(Fail)'.
             else {
 
-                Err( ParseError {
-
-                    offset: 0,
-
-                    name_stack: vec![name],
-
-                    message: concat!("No valid symbol found in '", stringify!($name), "'.")
+                Err( Done::Fail { 
+                
+                    name,
+                    done: None
 
                 })
 

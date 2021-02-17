@@ -1,6 +1,6 @@
 [package]
 name = "yarpl"
-version = "0.0.5"
+version = "0.0.6-pre-release"
 authors = ["hldprk <hldprk@gmail.com>"]
 edition = "2018"
 description = "Yet Another Rust Parsing Library"
