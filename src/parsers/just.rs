@@ -4,7 +4,7 @@
 ///
 /// ## Matching a String
 /// 
-/// The most simple way to use this is by setting a function equal to some string literal inside `just!`.
+/// The most simple way to use this is by putting a string literal in a `just!` declaration.
 ///
 /// ```
 /// just!(pub fn number_one { "1" } );
@@ -15,12 +15,14 @@
 ///
 /// ## Using a Function
 /// 
-/// Matching one specific string at a time isn't often ideal, so you may also include a function with the type ```fn(&char) -> bool```
-/// which will iterate over the source string until the function returns `false.` If some characters matched, this `just!` function
-/// will return [`Done::Terminal`], otherwise returns [`Done::Fail`].
+/// Matching one specific string at a time isn't often ideal, so you may also include a function with the type ```fn(&char) -> bool``` in a `just!` function body.
+/// The source string is then iterated over until the provided predicate function returns false. A resulting match of one or more characters will return
+/// a `Done::Terminal`, or a `Done::Fail` otherwise.
 ///
 /// ### Example 
 /// ```
+///
+/// fn is_ascii( character: &char ) -> bool { ... }
 ///
 /// just!(pub fn ascii_characters { is_ascii(); } )
 /// 

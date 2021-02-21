@@ -86,11 +86,11 @@ impl Display for Progress {
 
         if self.is_empty() {
         
-            write!(formatter, "\nNo progress was made.\n");
+            writeln!(formatter, "\nNo progress was made.");
 
         } else {
 
-            write!(formatter, "{} \n\n ...progressed {} characters.\n", self.done().unwrap(), self.offset() );
+            writeln!(formatter, "{}\n...progressed {} characters.\n", self.done().unwrap(), self.offset() );
 
         }
         

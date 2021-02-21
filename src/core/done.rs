@@ -6,7 +6,7 @@ use std::fmt::Formatter;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
-/// Concrete syntax tree returned from a parser.
+/// An n-ary concrete syntax tree returned from a parser.
 #[derive(Debug, Clone)]
 pub enum Done {
 
@@ -119,6 +119,7 @@ impl Done {
 
     }
 
+
     pub fn rename(&mut self, new_name: &'static str) -> () {
 
         if let Self::Nonterminal {ref mut name, ..} = self {
@@ -165,7 +166,7 @@ impl std::fmt::Display for Done {
 
         if self.is_fail() { 
 
-            write!(formatter, "=> Failed!");
+            write!(formatter, "=> FAILED");
 
         }
         

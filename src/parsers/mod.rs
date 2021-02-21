@@ -21,3 +21,6 @@ pub mod repeat;
 
 #[macro_use]
 pub mod maybe;
+
+#[macro_use]
+pub mod parser;
