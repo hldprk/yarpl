@@ -3,7 +3,9 @@
 ///
 /// ### Example
 /// ```
-/// just!( fn maybe_space { " " } );
+/// just!( fn space { " " } );
+///
+/// maybe!( fn maybe_space { " " } );
 ///
 /// assert!( maybe_space(" ", 0).is_ok() );
 /// assert!( maybe_space("asdfasfsa", 0).is_ok() );

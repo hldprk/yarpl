@@ -11,15 +11,23 @@ mod tests {
 	use yarpl::not;
 	use yarpl::repeat;
 	use yarpl::same_as;
-	
-    just!(fn first { "first" });
+    use yarpl::parser;
 
+    fn is_ascii(character: &char) -> bool {
+
+        character.is_ascii()
+
+    }
+
+    just!(fn first { "first" } );
+    just!(fn ascii_characters { is_ascii(); });
     #[test]
     pub fn test_just () -> () {
 
         assert!(first("first", 0).is_ok());
         assert!(first("asdfasdf", 0).is_err());
 
+        println!("\n{}", ascii_characters("aasdfafsdfff", 0).unwrap());
         println!("\n{}", first("first", 0).unwrap().done().unwrap());
 
     }
@@ -90,6 +98,24 @@ mod tests {
         assert!(maybe_first("first", 0).is_ok());
         assert!(maybe_first("asdffirst", 0).is_ok());
         assert!(maybe_first("", 0).is_ok());
+
+    }
+
+    parser!( 
+
+        pub fn some_parser {
+
+
+        }
+
+    );
+    
+    #[test]
+    pub fn test_parser () {
+
+        //assert!(some_parser("", 0).is_ok());
+
+        //println!("{}", some_parser("", 0).unwrap());
 
     }
 
