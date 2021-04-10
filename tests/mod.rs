@@ -11,6 +11,7 @@ mod tests {
 	use yarpl::Not;
 	use yarpl::Many;
 	use yarpl::Maybe;
+	use yarpl::shift;
 
 	#[derive(Clone, Default, Copy)]
 	pub struct A;	
@@ -26,7 +27,7 @@ mod tests {
 	}
 
 	#[test]
-	pub fn shift() -> Result {
+	pub fn shift_without_macro() -> Result {
 
 		let ref mut consumer = Consumer::from("abc1234");
 
@@ -34,6 +35,21 @@ mod tests {
 		consumer.shift("b")?;
 		consumer.shift("c")?;
 		consumer.shift_characters(&|character: char| "1234567890".contains(character))
+
+	}
+
+	shift!(pub B "b");
+
+	#[test]
+	pub fn shift_with_macro() -> Result {
+
+		let ref mut consumer = Consumer::from("b");
+
+		let result = consumer.consume(&mut B::default());
+
+		assert!(consumer.taken().len() == 1);
+		
+		result
 
 	}
 	

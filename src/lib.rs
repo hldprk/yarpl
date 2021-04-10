@@ -15,6 +15,9 @@ mod maybe;
 mod not;
 mod must;
 
+#[macro_use]
+mod shift;
+
 pub use consumer::Consumer;
 pub use feed::Result;
 pub use feed::Feed;
