@@ -1,122 +1,92 @@
 
-
+#[allow(deprecated)]
 
 #[cfg(test)]
 mod tests {
 	
-	use yarpl::just;
-	use yarpl::and;
-	use yarpl::or;
-	use yarpl::maybe;
-	use yarpl::not;
-	use yarpl::repeat;
-	use yarpl::same_as;
-    use yarpl::parser;
+	use yarpl::Consumer;
+	use yarpl::Result;
+	use yarpl::Feed;
+	use yarpl::Must;
+	use yarpl::Not;
+	use yarpl::Many;
+	use yarpl::Maybe;
 
-    fn is_ascii(character: &char) -> bool {
+	#[derive(Clone, Default, Copy)]
+	pub struct A;	
 
-        character.is_ascii()
+	impl Feed for A {
 
-    }
+		fn feed(&mut self, consumer: &mut Consumer) -> Result {
+			
+			consumer.shift("a")
 
-    just!(fn first { "first" } );
-    just!(fn ascii_characters { is_ascii(); });
-    #[test]
-    pub fn test_just () -> () {
+		}
 
-        assert!(first("first", 0).is_ok());
-        assert!(first("asdfasdf", 0).is_err());
+	}
 
-        println!("\n{}", ascii_characters("aasdfafsdfff", 0).unwrap());
-        println!("\n{}", first("first", 0).unwrap().done().unwrap());
+	#[test]
+	pub fn shift() -> Result {
 
-    }
+		let ref mut consumer = Consumer::from("abc1234");
 
-    just!(fn second { "second" });
+		consumer.shift("a")?;
+		consumer.shift("b")?;
+		consumer.shift("c")?;
+		consumer.shift_characters(&|character: char| "1234567890".contains(character))
 
-    and!(fn first_and_second { first(); second(); });
+	}
+	
+	#[test]
+	pub fn must() -> Result {
 
-    #[test]
-    pub fn test_and () -> () {
-        
-        assert!(first_and_second("firstsecond", 0).is_ok());
-        assert!(first_and_second("firstsecond", 1).is_err());
-        println!("\n{}\n", first_and_second("firstsecond", 0).unwrap());
+		let ref mut consumer = Consumer::from("a");
+		
+		let result  = consumer.consume(&mut Must::<A>::default());
+		
+		assert!(consumer.taken().is_empty());
 
-    }
+		result
 
-    or!(fn first_or_second { first(); first(); first(); second(); });
-    
-    #[test]
-    pub fn test_or () -> () {
+	}
 
-        assert!(first_or_second("first", 0).is_ok());
-        assert!(first_or_second("second", 0).is_ok());
-        assert!(first_or_second("asdfafsd", 0).is_err());
+	#[test]
+	pub fn not() {
 
-    }
+		let ref mut consumer = Consumer::from("a");
+		
+		let result  = consumer.consume(&mut Not::<A>::default());
+		
+		assert!(consumer.taken().is_empty());
 
-    not!(fn not_first { first(); });
-    
-    #[test]
-    pub fn test_not () -> () {
+		assert!(result.is_err());
 
-        assert!(not_first("asdfsadf", 0).is_ok());
-        assert!(not_first("first", 0).is_err());
+	}
 
-    }
+	#[test]
+	pub fn many() {
 
-    repeat!(fn repeat_first_five_times { first(5, 5); });
-    #[test]
-    pub fn test_repeat () -> () {
+		let ref mut consumer = Consumer::from("aaa");
 
-        assert!(repeat_first_five_times("firstfirstfirstfirstfirst", 0).is_ok());
+		let result = consumer.consume(&mut Many::<A>::from(1..4));
 
-    }
+		assert!(consumer.taken().len() == 3);
 
-    same_as!( pub fn same_as_first_or_second { first(); second(); });
+		assert!(result.is_ok());
 
-    #[test]
-    pub fn test_same_as () -> () {
-        
-        let success
-            = same_as_first_or_second("first", 0);
-        
-        let failure
-            = same_as_first_or_second("third", 0);
-        
-        println!("{}\n", success.unwrap());
-        println!("{}\n", failure.unwrap_err());
-        
-    }
+	}
 
-    maybe!(pub maybe_first { first; });
+	#[test]
+	pub fn maybe() -> yarpl::Result {
 
-    #[test]
-    pub fn test_maybe () -> () {
+		let ref mut consumer = Consumer::from("ab");
 
-        assert!(maybe_first("first", 0).is_ok());
-        assert!(maybe_first("asdffirst", 0).is_ok());
-        assert!(maybe_first("", 0).is_ok());
+		let ref mut maybe_a = Maybe::<A>::default();
 
-    }
+		consumer.consume(maybe_a)?;
+		consumer.consume(maybe_a)
 
-    parser!( 
-
-        pub fn some_parser {
-
-
-        }
-
-    );
-    
-    #[test]
-    pub fn test_parser () {
-
-        //assert!(some_parser("", 0).is_ok());
-
-        //println!("{}", some_parser("", 0).unwrap());
-
-    }
+	}
 
 }
+

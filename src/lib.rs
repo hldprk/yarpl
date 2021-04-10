@@ -5,10 +5,20 @@
 #![allow(unused_imports)]
 #![feature(extended_key_value_attributes)]
 
-
-// The linter doesn't like this line, but it compiles fine.
 #![doc = include_str!("../README.md")]
 
 
-pub mod core;
-pub mod parsers;
+mod consumer;
+mod feed;
+mod many;
+mod maybe;
+mod not;
+mod must;
+
+pub use consumer::Consumer;
+pub use feed::Result;
+pub use feed::Feed;
+pub use many::Many;
+pub use maybe::Maybe;
+pub use not::Not;
+pub use must::Must;
