@@ -108,12 +108,12 @@ impl Consumer {
 	/// let ref mut consumer = Consumer::from(input);
 	/// 
 	/// /// `consumer` will build a token from as many characters that are digits.
-	/// consumer.shift_characters(&|c| "1234567890".contains(c));
+	/// consumer.shift_while(&|c| "1234567890".contains(c));
 	/// 
 	/// /// The entire input was parsed because all characters were digits.
 	///	assert_eq!(consumer.top().unwrap() , input.to_string());
 	/// ``` 
-	pub fn shift_characters(&mut self, function: &dyn Fn(char) -> bool) -> Result {
+	pub fn shift_while(&mut self, function: &dyn Fn(char) -> bool) -> Result {
 		
 		let string : String = self.remainder.chars().take_while(
 			|character |

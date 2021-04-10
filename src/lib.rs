@@ -18,6 +18,9 @@ mod must;
 #[macro_use]
 mod shift;
 
+#[macro_use]
+mod shift_while;
+
 pub use consumer::Consumer;
 pub use feed::Result;
 pub use feed::Feed;
