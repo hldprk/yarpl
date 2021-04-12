@@ -61,67 +61,22 @@ impl Consumer {
 		}
 		
 	}
-	/// Matches a string to the beginning of the remaining input and pushes it to `taken`.
-	///
-	/// # Example
-	/// 
-	/// ```
-	///	# use yarpl::Consumer;
-	///
-	/// let input = "aaabbbccc";
-	///
-	/// let ref mut consumer = Consumer::from(input);
-	/// 
-	/// consumer.shift("aaa");
-	/// consumer.shift("bbb");
-	/// consumer.shift("ccc");
-	/// 
-	/// let expected = vec![String::from("aaa"), String::from("bbb"), String::from("ccc")];
-	///
-	///	assert_eq!(consumer.taken() , expected);
-	/// ``` 
 
-	pub fn shift(&mut self, string: &str) -> Result {
+	/// Matches a string to the beginning of the remaining input and pushes it to `taken`.
+	pub(crate) fn consume_str(&mut self, string: &str) -> Result {
 		
 		if self.remainder.starts_with(string) {
 			
 			self.remainder = self.remainder.split_at(string.len()).1.to_string();
-
+			
 			self.taken.push(string.to_string());
-
+			
 			Ok(())
 		}
 		
 		else { Err(()) }
-
+		
 	}
 
-	/// Matches a token built according to the provided `char` predicate.
-	///
-	/// # Example
-	/// 
-	/// ```
-	///	# use yarpl::Consumer;
-	///
-	/// let input = "1234";
-	///
-	/// let ref mut consumer = Consumer::from(input);
-	/// 
-	/// /// `consumer` will build a token from as many characters that are digits.
-	/// consumer.shift_while(&|c| "1234567890".contains(c));
-	/// 
-	/// /// The entire input was parsed because all characters were digits.
-	///	assert_eq!(consumer.top().unwrap() , input.to_string());
-	/// ``` 
-	pub fn shift_while(&mut self, function: &dyn Fn(char) -> bool) -> Result {
-		
-		let string : String = self.remainder.chars().take_while(
-			|character |
-				function(*character)).collect();
-		
-		self.shift(&string)
-
-	}
-	
 	
 }

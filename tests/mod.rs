@@ -11,8 +11,7 @@ mod tests {
 	use yarpl::Not;
 	use yarpl::Many;
 	use yarpl::Maybe;
-	use yarpl::shift;
-    use yarpl::shift_while;
+	use yarpl::Peek;
 
 	#[derive(Clone, Default, Copy)]
 	pub struct A;	
@@ -21,42 +20,27 @@ mod tests {
 
 		fn feed(&mut self, consumer: &mut Consumer) -> Result {
 			
-			consumer.shift("a")
+			consumer.consume(&mut "a")
 
 		}
 
 	}
 
 	#[test]
-	pub fn shift_without_macro() -> Result {
+	pub fn consume() -> Result {
 
-		let ref mut consumer = Consumer::from("abc1234");
+		let ref mut consumer = Consumer::from("abc");
 
-		consumer.shift("a")?;
-		consumer.shift("b")?;
-		consumer.shift("c")?;
-		consumer.shift_while(&|character: char| "1234567890".contains(character))
+		consumer.consume(&mut "a")?;
+		consumer.consume(&mut "b")?;
+		consumer.consume(&mut "c")?;
 
-	}
-
-	shift!(pub B "b");
-
-	shift_while!(pub C &|character| character == 'c');
-
-	#[test]
-	pub fn shift_macro() -> Result {
-
-		let ref mut consumer = Consumer::from("bcccc");
-
-		consumer.consume(&mut B::default())?;
-		consumer.consume(&mut C::default())?;
-
-		assert_eq!(consumer.taken().len(), 2);
+		assert_eq!(consumer.taken().len(), 3);
 
 		Ok(())
-		
+
 	}
-	
+
 	#[test]
 	pub fn must() -> Result {
 
@@ -105,6 +89,17 @@ mod tests {
 
 		consumer.consume(maybe_a)?;
 		consumer.consume(maybe_a)
+
+	}
+
+	#[test]
+	pub fn peek() -> yarpl::Result {
+
+		let ref mut consumer = Consumer::from("09931755");
+
+		let ref mut peek = Peek::new(|character| "1234567890".contains(character) );
+		
+		consumer.consume(peek)
 
 	}
 

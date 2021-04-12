@@ -14,12 +14,8 @@ mod many;
 mod maybe;
 mod not;
 mod must;
+mod peek;
 
-#[macro_use]
-mod shift;
-
-#[macro_use]
-mod shift_while;
 
 pub use consumer::Consumer;
 pub use feed::Result;
@@ -28,3 +24,4 @@ pub use many::Many;
 pub use maybe::Maybe;
 pub use not::Not;
 pub use must::Must;
+pub use peek::Peek;

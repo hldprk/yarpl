@@ -10,3 +10,12 @@ pub trait Feed {
 
 }
 
+impl Feed for &str {
+
+	fn feed(&mut self, consumer: &mut Consumer) -> Result {
+
+		consumer.consume_str(self)
+
+	}
+
+}
