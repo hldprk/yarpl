@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
+use std::ops::Range;
+use crate::feed;
 use crate::feed::Feed;
 use crate::feed::Result;
 
@@ -7,8 +10,8 @@ use crate::feed::Result;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Consumer {
 
-	taken: Vec<String>,
-	remainder: String
+	pub(crate) tokens: Vec<String>,
+	pub(crate) remainder: String,
 
 }
 
@@ -18,9 +21,9 @@ impl From<&str> for Consumer {
 		
 		Consumer {
 			
-			taken: Vec::<String>::default(),
-			remainder: String::from(string)
-			
+			tokens: Vec::<String>::default(),
+			remainder: String::from(string),
+
 		}
 		
 	}
@@ -37,9 +40,9 @@ impl Consumer {
 	}	
 
 	/// Returns the tokens parsed by `self`.
-	pub fn taken(&self) -> Vec<String> {
+	pub fn tokens(&self) -> Vec<String> {
 
-		self.taken.clone()
+		self.tokens.clone()
 
 	}
 	
@@ -53,7 +56,7 @@ impl Consumer {
 	/// Returns the last token collected by this `Consumer`.
 	pub fn top(&self) -> Option<String> {
 
-		match self.taken.last() {
+		match self.tokens.last() {
 
 			Some(string) => Some(string.clone()),
 			None => None
@@ -62,21 +65,5 @@ impl Consumer {
 		
 	}
 
-	/// Matches a string to the beginning of the remaining input and pushes it to `taken`.
-	pub(crate) fn consume_str(&mut self, string: &str) -> Result {
-		
-		if self.remainder.starts_with(string) {
-			
-			self.remainder = self.remainder.split_at(string.len()).1.to_string();
-			
-			self.taken.push(string.to_string());
-			
-			Ok(())
-		}
-		
-		else { Err(()) }
-		
-	}
-
-	
 }
+

@@ -1,10 +1,10 @@
-`yarpl`, or **Yet Another Rust Parsing Library**, revolves around the [`Consumer`](Consumer) struct and the [`Feed`](Feed) trait.
+`yarpl` (or **Yet Another Rust Parsing Library**) makes use of a the `Consumer` struct and the `Feed` trait to make parsing easier.
 
 # Consumer
 
-A `Consumer` hold a `Vec<String>` of parsed tokens as well as the remaining unparsed `String`.
+A `Consumer` tracks parsed tokens as well as some remaining unparsed input.
 
 
 # Feed 
 
-The `Feed` trait defines how a trait is parsed using a `Consumer` using `consume`.
+The `Feed` trait defines how a trait is parsed using a `Consumer` using `Consumer::consume`.

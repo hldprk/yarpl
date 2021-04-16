@@ -26,7 +26,9 @@ impl<F : Fn(char) -> bool> Feed for Peek<F> {
 				|character|
 					self.0(*character)).collect();
 
-		consumer.consume_str(&string)
+		let ref mut str = string.as_str();
+
+		consumer.consume(str)
 		
 	}
 

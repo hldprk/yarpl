@@ -35,7 +35,7 @@ mod tests {
 		consumer.consume(&mut "b")?;
 		consumer.consume(&mut "c")?;
 
-		assert_eq!(consumer.taken().len(), 3);
+		assert_eq!(consumer.tokens().len(), 3);
 
 		Ok(())
 
@@ -48,7 +48,7 @@ mod tests {
 		
 		let result  = consumer.consume(&mut Must::<A>::default());
 		
-		assert!(consumer.taken().is_empty());
+		assert!(consumer.tokens().is_empty());
 
 		result
 
@@ -61,7 +61,7 @@ mod tests {
 		
 		let result  = consumer.consume(&mut Not::<A>::default());
 		
-		assert!(consumer.taken().is_empty());
+		assert!(consumer.tokens().is_empty());
 
 		assert!(result.is_err());
 
@@ -74,7 +74,7 @@ mod tests {
 
 		let result = consumer.consume(&mut Many::<A>::from(1..4));
 
-		assert!(consumer.taken().len() == 3);
+		assert!(consumer.tokens().len() == 3);
 
 		assert!(result.is_ok());
 

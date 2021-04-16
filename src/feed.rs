@@ -14,8 +14,23 @@ impl Feed for &str {
 
 	fn feed(&mut self, consumer: &mut Consumer) -> Result {
 
-		consumer.consume_str(self)
+		let string = String::from(*self);
 
+		if consumer.remainder.starts_with(&string) {
+			
+			consumer.remainder = consumer.remainder.split_at(self.len()).1.to_string();
+			
+			consumer.tokens.push(self.to_string());
+			
+			Ok(())
+		}
+		
+		else { Err(()) }
+		
 	}
 
 }
+
+
+
+
