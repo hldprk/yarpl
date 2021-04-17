@@ -33,3 +33,38 @@ impl<F : Fn(char) -> bool> Feed for Peek<F> {
 	}
 
 }
+
+/// Defines a type that solely parses with `Peek`.
+///
+/// # Example
+///
+/// ```
+/// # use yarpl::peek;
+/// peek!(Letters : char::is_alphabetic);
+/// ```
+/// 
+#[macro_export]
+macro_rules! peek {
+
+	($Type:ident : $peeker: expr) => {
+
+		#[derive(Clone, Copy, Default, PartialEq, Debug)]
+		pub struct $Type;
+
+		impl $crate::Feed for $Type {
+
+			fn feed(&mut self, consumer: &mut $crate::Consumer) -> $crate::Result {
+
+				let ref mut peeker = $crate::Peek::new($peeker);
+				
+				consumer.consume(peeker)?;
+
+				Ok(())
+
+			}
+
+		}
+
+	}
+
+}

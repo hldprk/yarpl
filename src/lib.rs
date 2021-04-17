@@ -16,6 +16,12 @@ mod not;
 mod must;
 mod peek;
 
+#[macro_use]
+mod only;
+
+#[macro_use]
+mod plan;
+
 
 pub use consumer::Consumer;
 pub use feed::Result;

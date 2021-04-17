@@ -31,6 +31,3 @@ impl Feed for &str {
 
 }
 
-
-
-

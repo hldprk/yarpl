@@ -6,25 +6,18 @@ mod tests {
 	
 	use yarpl::Consumer;
 	use yarpl::Result;
-	use yarpl::Feed;
 	use yarpl::Must;
 	use yarpl::Not;
 	use yarpl::Many;
 	use yarpl::Maybe;
-	use yarpl::Peek;
 
-	#[derive(Clone, Default, Copy)]
-	pub struct A;	
+	yarpl::only!(A : "a");
+	yarpl::only!(B : "b");
+	yarpl::only!(C : "c");
 
-	impl Feed for A {
+	yarpl::plan!(ABC : A, B, C);
 
-		fn feed(&mut self, consumer: &mut Consumer) -> Result {
-			
-			consumer.consume(&mut "a")
-
-		}
-
-	}
+	yarpl::peek!(D : |character| character == 'd');
 
 	#[test]
 	pub fn consume() -> Result {
@@ -44,9 +37,9 @@ mod tests {
 	#[test]
 	pub fn must() -> Result {
 
-		let ref mut consumer = Consumer::from("a");
+		let ref mut consumer = Consumer::from("abc");
 		
-		let result  = consumer.consume(&mut Must::<A>::default());
+		let result  = consumer.consume(&mut Must::<ABC>::default());
 		
 		assert!(consumer.tokens().is_empty());
 
@@ -70,11 +63,12 @@ mod tests {
 	#[test]
 	pub fn many() {
 
-		let ref mut consumer = Consumer::from("aaa");
+		let ref mut consumer = Consumer::from("abcabcabc");
 
-		let result = consumer.consume(&mut Many::<A>::from(1..4));
+		let result = consumer.consume(&mut Many::<ABC>::from(1..4));
 
-		assert!(consumer.tokens().len() == 3);
+		assert!(consumer.tokens().len() == 9);
+		println!("{:?}", consumer.tokens());
 
 		assert!(result.is_ok());
 
@@ -95,11 +89,15 @@ mod tests {
 	#[test]
 	pub fn peek() -> yarpl::Result {
 
-		let ref mut consumer = Consumer::from("09931755");
+		let ref mut consumer = Consumer::from("dddd");
 
-		let ref mut peek = Peek::new(|character| "1234567890".contains(character) );
+		let ref mut d = D::default();
 		
-		consumer.consume(peek)
+		consumer.consume(d)?;
+
+		assert!(consumer.top().unwrap().len() == 4);
+
+		Ok(())
 
 	}
 
