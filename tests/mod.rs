@@ -19,6 +19,7 @@ mod tests {
 
 	yarpl::peek!(D : |character| character == 'd');
 
+
 	#[test]
 	pub fn consume() -> Result {
 

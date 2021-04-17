@@ -14,6 +14,8 @@ mod many;
 mod maybe;
 mod not;
 mod must;
+
+#[macro_use]
 mod peek;
 
 #[macro_use]

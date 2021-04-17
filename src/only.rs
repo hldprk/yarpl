@@ -5,7 +5,7 @@
 /// # Example
 ///
 /// ```
-/// # use yarpl::token;
+/// # use yarpl::only;
 /// only!(A : "a");
 /// ```
 /// 

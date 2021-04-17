@@ -5,11 +5,12 @@
 ///
 /// ```
 /// # use yarpl::plan;
+/// # use yarpl::only;
 /// only!(A : "a");
 ///
 /// only!(B : "b");
 ///
-/// only!(A : "c");
+/// only!(C : "c");
 ///
 /// plan!(ABC : A, B, C);
 /// ```
