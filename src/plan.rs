@@ -18,10 +18,10 @@
 #[macro_export]
 macro_rules! plan {
 
-	($Type:ident : $($Types:ident),* $(,)?) => {
+	($visibility:vis $Type:ident : $($Types:ident),* $(,)?) => {
 
 		#[derive(Clone, Copy, Default, PartialEq, Debug)]
-		pub struct $Type;
+		$visibility struct $Type;
 
 		impl $crate::Feed for $Type {
 

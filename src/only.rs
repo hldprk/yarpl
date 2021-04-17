@@ -1,5 +1,6 @@
 
 
+
 /// Defines a type that only parses a string.
 ///
 /// # Example

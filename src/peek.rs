@@ -46,10 +46,10 @@ impl<F : Fn(char) -> bool> Feed for Peek<F> {
 #[macro_export]
 macro_rules! peek {
 
-	($Type:ident : $peeker: expr) => {
+	($visibility:vis $Type:ident : $peeker: expr) => {
 
 		#[derive(Clone, Copy, Default, PartialEq, Debug)]
-		pub struct $Type;
+		$visibility struct $Type;
 
 		impl $crate::Feed for $Type {
 
