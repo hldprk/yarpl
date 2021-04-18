@@ -1,106 +1,68 @@
 
 #[allow(deprecated)]
-
+#[allow(const_item_mutation)]
+#[allow(unused_must_use)]
 #[cfg(test)]
+
+
 mod tests {
 	
-	use yarpl::Consumer;
-	use yarpl::Result;
-	use yarpl::Must;
-	use yarpl::Not;
+	use yarpl::Parser;
 	use yarpl::Many;
 	use yarpl::Maybe;
+	use yarpl::Must;
+	use yarpl::Only;
 
-	yarpl::only!(A : "a");
-	yarpl::only!(B : "b");
-	yarpl::only!(C : "c");
-
-	yarpl::plan!(ABC : A, B, C);
-
-	yarpl::peek!(D : |character| character == 'd');
 
 
 	#[test]
-	pub fn consume() -> Result {
+	pub fn consume() {
 
-		let ref mut consumer = Consumer::from("abc");
+		let mut parser = Parser::from("abc");
 
-		consumer.consume(&mut "a")?;
-		consumer.consume(&mut "b")?;
-		consumer.consume(&mut "c")?;
+		parser.feed::<Only<"a">>();
+		parser.feed::<Only<"b">>();
+		parser.feed::<Only<"c">>();
 
-		assert_eq!(consumer.tokens().len(), 3);
-
-		Ok(())
-
-	}
-
-	#[test]
-	pub fn must() -> Result {
-
-		let ref mut consumer = Consumer::from("abc");
-		
-		let result  = consumer.consume(&mut Must::<ABC>::default());
-		
-		assert!(consumer.tokens().is_empty());
-
-		result
-
-	}
-
-	#[test]
-	pub fn not() {
-
-		let ref mut consumer = Consumer::from("a");
-		
-		let result  = consumer.consume(&mut Not::<A>::default());
-		
-		assert!(consumer.tokens().is_empty());
-
-		assert!(result.is_err());
+		assert_eq!(parser.tokens().len(), 3);
 
 	}
 
 	#[test]
 	pub fn many() {
 
-		let ref mut consumer = Consumer::from("abcabcabc");
+		let mut parser = Parser::from("aaaa");
 
-		let result = consumer.consume(&mut Many::<ABC>::from(1..4));
+		parser.feed::<Many<Only<"a">, {0..5}>>();
 
-		assert!(consumer.tokens().len() == 9);
-		println!("{:?}", consumer.tokens());
-
-		assert!(result.is_ok());
+		assert_eq!(parser.tokens().len(), 4);
 
 	}
 
 	#[test]
-	pub fn maybe() -> yarpl::Result {
-
-		let ref mut consumer = Consumer::from("ab");
-
-		let ref mut maybe_a = Maybe::<A>::default();
-
-		consumer.consume(maybe_a)?;
-		consumer.consume(maybe_a)
-
-	}
-
-	#[test]
-	pub fn peek() -> yarpl::Result {
-
-		let ref mut consumer = Consumer::from("dddd");
-
-		let ref mut d = D::default();
+	pub fn maybe() {
 		
-		consumer.consume(d)?;
-
-		assert!(consumer.top().unwrap().len() == 4);
-
-		Ok(())
-
+		let parser = Parser::from("b");
+		
+		let a_result = parser.clone().feed::<Maybe<Only<"a">>>();
+		let b_result = parser.clone().feed::<Maybe<Only<"b">>>();
+		
+		assert_eq!(a_result.is_ok(), b_result.is_ok());
+		
 	}
+	
+	#[test]
+	pub fn must() {
+		
+		let parser = Parser::from("b");
+	
+		let result = parser.clone().feed::<Must<Only<"b">>>();
+	
+		assert!(result.is_ok());
+		assert!(parser.top().is_none());
+				
+	}
+
 
 }
 

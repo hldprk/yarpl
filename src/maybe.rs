@@ -1,13 +1,12 @@
-use crate::consumer;
-use crate::feed::Feed;
-use crate::consumer::Consumer;
-use crate::feed::Result;
+use crate::consume::Consume;
+use crate::Parser;
+use crate::Result;
 
-/// When parsed, always returns `Ok`. Will also construct a `Feed` object in `self` if successful.
+/// When parsed, always returns `Ok`. Will also construct a `Consume` object in `self` if successful.
 #[derive(Clone, Debug, PartialEq, Default)]
-pub struct Maybe<T : Feed> (Option<T>);
+pub struct Maybe<T : Consume> (Option<T>);
 
-impl<T : Feed + Clone> Maybe<T> {
+impl<T : Consume + Clone> Maybe<T> {
 
 	/// Returns the inner parsed object as `Some(T)` if done and succesful, otherwise `None`.
 	fn inner(&self) -> Option<T> {
@@ -18,27 +17,25 @@ impl<T : Feed + Clone> Maybe<T> {
 
 }
 
-impl<T : Feed + Default + Clone> Feed for Maybe<T> {
+impl<T : Consume> Consume for Maybe<T> {
 
-	fn feed(&mut self, consumer: &mut Consumer)	-> Result {
+	type Target = Option<T::Target>;
 
-		let ref mut consumer_cloned = consumer.clone();
-		
-		let ref mut feed = T::default();
+	fn consume(parser: &mut Parser) -> Result<Self::Target> {
 
-		let result = consumer_cloned.consume(feed);
+		let mut parser_cloned = parser.clone();
+
+		let result = parser_cloned.feed::<T>();
 
 		if result.is_ok() {
 
-			consumer.clone_from(consumer_cloned);
+			parser.clone_from(&parser_cloned);
 
-			self.0 = Some(feed.clone());
-
-			Ok(())
-
+			Ok(Some(result.unwrap()))
+			
 		}
 
-		else { Ok(()) }
+		else { Ok(None) }
 
 	}
 

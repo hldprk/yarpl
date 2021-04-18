@@ -1,37 +1,35 @@
 
-use crate::feed::Feed;
-use crate::consumer::Consumer;
-use crate::feed::Result;
+use crate::consume::Consume;
+use crate::Parser;
+use crate::consume::Result;
+use std::marker::PhantomData;
 use std::ops::Range;
-#[derive(Clone, PartialEq)]
+use std::ops::RangeBounds;
+use std::ops::RangeInclusive;
+#[derive(Clone, PartialEq, Default)]
 
-/// Given a type `T : Feed` and a range `n .. m`, parses `T` between `n` and `m` times.
-pub struct Many<T : Feed> {
+/// Given a type `T : Consume` and a range `n .. m`, parses `T` between `n` and `m` times.
+pub struct Many<T : Consume, const RANGE: Range<usize>>(PhantomData<T>);
 
-	children : Vec<T>,
-	range: Range<usize>
+impl <T : Consume, const RANGE: Range<usize>> Consume for Many<T, RANGE> {
 
-}
+	type Target = Vec<T::Target>;
 
-impl <T : Feed + Default + Clone> Feed for Many<T> {
-
-	fn feed(&mut self, consumer: &mut Consumer) -> Result {
+	fn consume(parser: &mut Parser) -> Result<Self::Target> {
 		
-		let to_clone_from = Self::from(self.range.clone());
+		let mut children = Vec::<T::Target>::default(); 
 
 		let mut i = 0;
 
 		loop {
 
-			if i == self.range.end { break; }
+			if i == RANGE.end { break; }
 
-			let ref mut to_push = T::default();
-
-			let current_result = consumer.consume(to_push);
+			let current_result = parser.feed::<T>();
 
 			if current_result.is_ok() { 
 				
-				self.children.push(to_push.clone()); 
+				children.push(current_result.unwrap()); 
 			
 				i += 1;
 
@@ -41,11 +39,9 @@ impl <T : Feed + Default + Clone> Feed for Many<T> {
 
 		}
 
-		if self.range.contains(&i) {
+		if RANGE.contains(&i) {
 
-			self.clone_from(&to_clone_from);
-
-			Ok(())
+			Ok(children)
 
 		}
 		
@@ -54,32 +50,3 @@ impl <T : Feed + Default + Clone> Feed for Many<T> {
 	}
 
 }
-
-
-impl<T : Feed> IntoIterator for Many<T> {
-
-    type Item = T;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
-
-	fn into_iter(self) -> Self::IntoIter {
-		
-		self.children.into_iter()
-
-	}
-
-}
-
-impl<T : Feed> From<Range<usize>> for Many<T> {
-
-	fn from(range: Range<usize>) -> Self {
-		
-		Self {
-
-			children: Vec::default(),
-			range
-
-		}
-
-	}
-
-} 

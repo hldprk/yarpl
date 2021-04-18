@@ -1,27 +1,27 @@
 use std::marker::PhantomData;
 
-use crate::Consumer;
-use crate::Feed;
+use crate::Parser;
+use crate::Consume;
 use crate::Result;
 
 
 #[derive(Clone, Debug, Default, Copy)]
-/// A type that, when parsed, ensures an object of type `T : Feed` *cannot be parsed* from some `Consumer`.
-pub struct Not<T : Feed>(PhantomData<T>);
+/// A type that, when parsed, ensures an object of type `T : Consume` *cannot be parsed* from some `Parser`.
+pub struct Not<T : Consume>(PhantomData<T>);
 
 
-impl<T : Feed + Default> Feed for Not<T> {
+impl<T : Consume + Default + Copy> Consume for Not<T> {
 
-	fn feed(&mut self, consumer: &mut Consumer) -> Result {
+	type Target = ();
+
+	fn consume(parser: &mut Parser) -> Result<Self::Target> {
 		
-		let ref mut consumer_cloned = consumer.clone();
+		let ref mut parser_cloned = parser.clone();
 		
-		let result = consumer_cloned.consume(&mut T::default());
+		match parser_cloned.feed::<T>() {
 
-		match result {
-
-			Ok(_) => Err(()),
-			Err(_) => Ok(())
+			Ok(_) => Ok(()),
+			Err(_) => Err(()),
 
 		}
 

@@ -1,25 +1,25 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::ops::Range;
-use crate::feed;
-use crate::feed::Feed;
-use crate::feed::Result;
+use crate::consume;
+use crate::consume::Consume;
+use crate::consume::Result;
 
 
 /// Holds tokens (`String`) that have been parsed, as well as remaining input.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Consumer {
+pub struct Parser {
 
 	pub(crate) tokens: Vec<String>,
 	pub(crate) remainder: String,
 
 }
 
-impl From<&str> for Consumer {
+impl From<&str> for Parser {
 
 	fn from(string: &str) -> Self {
 		
-		Consumer {
+		Parser {
 			
 			tokens: Vec::<String>::default(),
 			remainder: String::from(string),
@@ -30,12 +30,12 @@ impl From<&str> for Consumer {
 	
 }
 
-impl Consumer {
+impl Parser {
 
-	/// Shifts tokens according to some `Feed` implementation and returns `Ok(())` if successful, `Err(())` otherwise.
-	pub fn consume(&mut self, feed: &mut dyn Feed) -> Result {
+	/// Shifts tokens according to some `Consume` implementation and returns `Ok(())` if successful, `Err(())` otherwise.
+	pub fn feed<T : Consume>(&mut self) -> Result<T::Target> {
 
-		feed.feed(self)
+		T::consume(self)
 
 	}	
 
@@ -53,7 +53,7 @@ impl Consumer {
 
 	}
 	
-	/// Returns the last token collected by this `Consumer`.
+	/// Returns the last token collected by this `Parser`.
 	pub fn top(&self) -> Option<String> {
 
 		match self.tokens.last() {

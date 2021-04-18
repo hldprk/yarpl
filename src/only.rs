@@ -1,32 +1,45 @@
+use std::fmt::Formatter;
+use std::ops::Deref;
+use std::fmt::Display;
+
+use crate::Consume;
+use crate::Parser;
+use crate::Result;
 
 
+#[derive(Clone, Copy, Default)]
+/// A `Consume` type from string literal.
+pub struct Only<const STRING: &'static str>;
+ 
 
-/// Defines a type that only parses a string.
-///
-/// # Example
-///
-/// ```
-/// # use yarpl::only;
-/// only!(A : "a");
-/// ```
-/// 
-#[macro_export]
-macro_rules! only {
+impl<const STRING: &'static str> Display for Only<STRING> {
 
-	($Type:ident : $literal: literal) => {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		
+		write!(f, "{}", STRING)
 
-		#[derive(Clone, Copy, Default, PartialEq, Debug)]
-		pub struct $Type;
+	}
 
-		impl $crate::Feed for $Type {
+}
 
-			fn feed(&mut self, consumer: &mut $crate::Consumer) -> $crate::Result {
+impl<const STRING: &'static str> Consume for Only<STRING> {
 
-				consumer.consume(&mut $literal)
+	type Target = &'static str;
 
-			}
+	fn consume(parser: &mut Parser) -> Result<Self::Target> {
+		
+		let string = STRING.to_string();
 
+		if parser.remainder.starts_with(&string) {
+			
+			parser.remainder = parser.remainder.split_at(string.len()).1.to_string();
+			
+			parser.tokens.push(string.to_string());
+			
+			Ok(STRING)
 		}
+		
+		else { Err(()) }
 
 	}
 
