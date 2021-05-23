@@ -5,64 +5,68 @@
 #[cfg(test)]
 
 
+#[cfg(test)]
 mod tests {
-	
-	use yarpl::Parser;
-	use yarpl::Many;
-	use yarpl::Maybe;
-	use yarpl::Must;
-	use yarpl::Only;
 
-
+	use yarpl::Expect;
+	use yarpl::Digits;
+	use yarpl::Just;
+	use yarpl::Letters;
+	use yarpl::Number;
+	use yarpl::Spaces;
 
 	#[test]
-	pub fn consume() {
+	fn expect_letters() {
 
-		let mut parser = Parser::from("abc");
-
-		parser.feed::<Only<"a">>();
-		parser.feed::<Only<"b">>();
-		parser.feed::<Only<"c">>();
-
-		assert_eq!(parser.tokens().len(), 3);
+		let _ = Letters::expect_from(&mut "asdf".chars());
 
 	}
 
 	#[test]
-	pub fn many() {
+	fn expect_digits() {
 
-		let mut parser = Parser::from("aaaa");
-
-		parser.feed::<Many<Only<"a">, {0..5}>>();
-
-		assert_eq!(parser.tokens().len(), 4);
+		let _ = Digits::expect_from(&mut "123asdf".chars());
 
 	}
 
 	#[test]
-	pub fn maybe() {
+	fn expect_space() {
+
+		let _ = Spaces::expect_from(&mut "\t\n  ".chars());
+
+	}
+
+	#[test]
+	fn expect_just() {
+
+		let _ = Just::<"yeah">::expect_from(&mut "yeahnah".chars());
+
+	}
+
+	#[test]
+	fn expect_maybe() {
 		
-		let parser = Parser::from("b");
-		
-		let a_result = parser.clone().feed::<Maybe<Only<"a">>>();
-		let b_result = parser.clone().feed::<Maybe<Only<"b">>>();
-		
-		assert_eq!(a_result.is_ok(), b_result.is_ok());
+		assert!(Just::<"yeah">::expect_from_maybe(&mut "asdf".chars()).is_ok());
+		assert!(Just::<"yeah">::expect_from_maybe(&mut "yeah".chars()).is_ok());
+
+	}
+
+	#[test]
+	fn expect_number() {
+
+		assert!(Number::expect_from(&mut "1234.5678".chars()).is_ok());
 		
 	}
 	
 	#[test]
-	pub fn must() {
+	fn expect_type_alias() {
 		
-		let parser = Parser::from("b");
-	
-		let result = parser.clone().feed::<Must<Only<"b">>>();
-	
-		assert!(result.is_ok());
-		assert!(parser.top().is_none());
-				
+		type Newline = Just::<"\n">;
+
+		assert!(Newline::expect_from(&mut "\n".chars()).is_ok());
+
 	}
 
-
+	
 }
 

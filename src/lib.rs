@@ -6,25 +6,21 @@
 #![allow(unused_imports)]
 #![feature(extended_key_value_attributes)]
 #![feature(const_generics)]
-#![feature(const_fn)]
-#![feature(const_eval_limit)]
-#![const_eval_limit = "0"]
 #![doc = include_str!("../README.md")]
+#![feature(iter_advance_by)]
 
+mod expect;
+mod letters;
+mod digits;
+mod spaces;
+mod number;
+mod just;
+mod iterator;
 
-mod parser;
-mod consume;
-mod many;
-mod maybe;
-mod not;
-mod must;
-mod only;
-
-pub use parser::Parser;
-pub use consume::Result;
-pub use consume::Consume;
-pub use many::Many;
-pub use maybe::Maybe;
-pub use not::Not;
-pub use must::Must;
-pub use only::Only;
+pub use expect::Expect;
+pub use letters::Letters;
+pub use digits::Digits;
+pub use spaces::Spaces;
+pub use number::Number;
+pub use just::Just;
+pub use iterator::Iterator;
