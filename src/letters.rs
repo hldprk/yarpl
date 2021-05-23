@@ -3,7 +3,7 @@ use std::fmt::Formatter;
 
 use crate::Expect;
 
-/// Parsed from one or more alphabetic characters.
+/// Parsed from an `Iterator` starting with one or more alphabetic characters.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Letters(pub(crate) String);
 

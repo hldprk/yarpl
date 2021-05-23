@@ -2,6 +2,8 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 
 use crate::Expect;
+
+/// Parsed from an `Iterator` starting with a generically-provided `&'static str`.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Just<const STRING: &'static str>;
 

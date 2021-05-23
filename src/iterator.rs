@@ -1,1 +1,0 @@
-pub trait Iterator : Clone + std::iter::Iterator<Item = char> {}

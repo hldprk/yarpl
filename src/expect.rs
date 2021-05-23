@@ -1,7 +1,7 @@
 use std::ops::RangeBounds;
 
 
-/// 'Expect' can be constructed by partially consuming strings with 'expect_from'.
+/// Types that are `Expect` can be constructed by consuming strings with `expect_from`.
 pub trait Expect {
 
 	/// Consumes characters from a `yarpl::Iterator` to yield `Ok(Self)` if successful.

@@ -2,7 +2,7 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 
 use crate::Expect;
-/// Parsed from one or more whitespace characters.
+/// Parsed from an `Iterator` starting with one or more whitespace characters.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Spaces(pub(crate) String);
 

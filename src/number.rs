@@ -6,7 +6,7 @@ use crate::Digits;
 use crate::Expect;
 use crate::Just;
 
-/// Parsed from a valid whole or decimal number.
+/// Parsed from an `Iterator` starting with a whole or decimal number.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Number(pub(crate) String);
 

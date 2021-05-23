@@ -2,11 +2,11 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 
 use crate::Expect;
+/// Parsed from an `Iterator` starting with one or more digits.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Digits(pub(crate) String);
 
 
-/// Parsed from one or more numeric characters.
 impl Expect for Digits {
 
 	fn expect_from<I : Iterator<Item = char> + Clone>(iterator: &mut I) -> Result<Self, ()> where Self : Sized {
