@@ -1,12 +1,11 @@
 use core::num;
 use std::fmt::Display;
+use std::fmt::Debug;
 use std::fmt::Formatter;
 
-use crate::Digits;
-use crate::Expect;
-use crate::Just;
+use crate::*;
 
-/// Parsed from an `Iterator` starting with a whole or decimal number.
+/// Parsed from an `Iterator` pointing to a whole or decimal number.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Number(pub(crate) String);
 
@@ -22,13 +21,14 @@ impl Display for Number {
 
 impl Expect for Number {
 
-	fn expect_from<I : Iterator<Item = char> + Clone>(iterator: &mut I) -> Result<Self, ()> where Self : Sized {
-		
-		let first_digits_maybe = Digits::expect_from(iterator);
+	fn expect_from(parser: &mut Parser) -> Result<Self>
+	where Self : Sized + Debug {
+			
+		let first_digits_maybe = Digits::expect_from(parser);
 
-		let period_maybe = Just::<".">::expect_from(iterator);
+		let period_maybe = Just::<".">::expect_from(parser);
 
-		let second_digits_maybe = Digits::expect_from(iterator);
+		let second_digits_maybe = Digits::expect_from(parser);
 
 		let second_digits = if period_maybe.is_ok() & second_digits_maybe.is_ok() {
 
@@ -50,7 +50,7 @@ impl Expect for Number {
 
 		} else {
 
-			Err(())
+			Err(Unexpected::from(parser.clone()))
 
 		}
 

@@ -8,62 +8,66 @@
 #[cfg(test)]
 mod tests {
 
-	use yarpl::Expect;
-	use yarpl::Digits;
-	use yarpl::Just;
-	use yarpl::Letters;
-	use yarpl::Number;
-	use yarpl::Spaces;
+	use yarpl::*;
 
 	#[test]
 	fn expect_letters() {
 
-		let _ = Letters::expect_from(&mut "asdf".chars());
+		assert!(Letters::expect_from(&mut Parser::from("asdf")).is_ok());
 
 	}
 
 	#[test]
 	fn expect_digits() {
 
-		let _ = Digits::expect_from(&mut "123asdf".chars());
+		assert!(Digits::expect_from(&mut Parser::from("123asdf")).is_ok());
 
 	}
 
 	#[test]
 	fn expect_space() {
 
-		let _ = Spaces::expect_from(&mut "\t\n  ".chars());
+		assert!(Spaces::expect_from(&mut Parser::from("\t\n  ")).is_ok());
 
 	}
 
 	#[test]
 	fn expect_just() {
 
-		let _ = Just::<"yeah">::expect_from(&mut "yeahnah".chars());
+		assert!(Just::<"yeah">::expect_from(&mut Parser::from("yeahnah")).is_ok());
 
 	}
 
 	#[test]
 	fn expect_maybe() {
 		
-		assert!(Just::<"yeah">::expect_from_maybe(&mut "asdf".chars()).is_ok());
-		assert!(Just::<"yeah">::expect_from_maybe(&mut "yeah".chars()).is_ok());
+		//assert!(Just::<"yeah">::maybe_expect_from(&mut Parser::from("asdf")).is_ok());
+		//assert!(Just::<"yeah">::maybe_expect_from(&mut Parser::from("yeah")).is_ok());
 
 	}
 
 	#[test]
 	fn expect_number() {
 
-		assert!(Number::expect_from(&mut "1234.5678".chars()).is_ok());
+		assert!(Number::expect_from(&mut Parser::from("1234.5678")).is_ok());
+		
+	}
+
+	#[test]
+	fn expect_type_alias() {
+		
+		type Newline = Just::<"asdf">;
+		
+		assert!(Parser::from("asdf").expect::<Newline>().is_ok());
 		
 	}
 	
 	#[test]
-	fn expect_type_alias() {
-		
-		type Newline = Just::<"\n">;
+	fn expect_many() {
 
-		assert!(Newline::expect_from(&mut "\n".chars()).is_ok());
+		let ref mut parser = Parser::from("aaaa");
+
+		println!("{}", parser.expect_many::<Just<"a">>(5..6).unwrap_err());
 
 	}
 

@@ -15,6 +15,9 @@ mod digits;
 mod spaces;
 mod number;
 mod just;
+mod parser;
+mod unexpected;
+mod result;
 
 pub use expect::Expect;
 pub use letters::Letters;
@@ -22,3 +25,6 @@ pub use digits::Digits;
 pub use spaces::Spaces;
 pub use number::Number;
 pub use just::Just;
+pub use unexpected::Unexpected;
+pub use parser::Parser;
+pub use result::Result;

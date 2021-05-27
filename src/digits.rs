@@ -1,25 +1,27 @@
 use std::fmt::Display;
+use std::fmt::Debug;
 use std::fmt::Formatter;
 
-use crate::Expect;
-/// Parsed from an `Iterator` starting with one or more digits.
+use crate::*;
+
+/// Parsed from an `Iterator` pointing to one or more digits.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Digits(pub(crate) String);
 
-
 impl Expect for Digits {
 
-	fn expect_from<I : Iterator<Item = char> + Clone>(iterator: &mut I) -> Result<Self, ()> where Self : Sized {
-		
-		let cloned_iterator = iterator.clone();
+	fn expect_from(parser: &mut Parser) -> Result<Self>
+	where Self : Sized + Debug {
+
+		let cloned_iterator = parser.clone();
 
 		let string: String = cloned_iterator.take_while(|character| character.is_digit(10)).collect();
 
-		if string.is_empty() { Err(()) }
+		if string.is_empty() { Err(Unexpected::from(parser.clone())) }
 
 		else {
 
-			iterator.advance_by(string.len());
+			parser.advance_by(string.len());
 
 			Ok(Digits(string))
 

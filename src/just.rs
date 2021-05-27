@@ -1,29 +1,31 @@
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::fmt::Debug;
 
-use crate::Expect;
+use crate::*;
 
-/// Parsed from an `Iterator` starting with a generically-provided `&'static str`.
+/// Used by a `Parser` to match a specific, provided string.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Just<const STRING: &'static str>;
 
 impl<const STRING: &'static str> Expect for Just<STRING> {
 
-	fn expect_from<I : Iterator<Item = char> + Clone>(iterator: &mut I) -> Result<Self, ()> where Self : Sized {
-		
-		let cloned_iterator = iterator.clone();
+	fn expect_from(parser: &mut Parser) -> Result<Self>
+	where Self : Sized + Debug {
+			
+		let cloned_iterator = parser.clone();
 
 		let remainder: String = cloned_iterator.collect();
 
 		if remainder.starts_with(STRING) {
 
-			iterator.advance_by(STRING.len());
+			parser.advance_by(STRING.len());
 
 			Ok(Just::<STRING>)
 
 		} else {
 
-			Err(())
+			Err(Unexpected::from(parser.clone()))
 
 		}
 		

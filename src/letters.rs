@@ -1,23 +1,25 @@
 use std::fmt::Display;
+use std::fmt::Debug;
 use std::fmt::Formatter;
 
-use crate::Expect;
+use crate::*;
 
-/// Parsed from an `Iterator` starting with one or more alphabetic characters.
+/// Parsed from a `Parser` pointing to one or more alphabetic characters.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Letters(pub(crate) String);
 
 impl Expect for Letters {
 
-	fn expect_from<I : Iterator<Item = char> + Clone>(iterator: &mut I) -> Result<Self, ()> where Self : Sized {
-		
-		let string: String = iterator.clone().take_while(|character| character.is_alphabetic()).collect();
+	fn expect_from(parser: &mut Parser) -> Result<Self>
+	where Self : Sized + Debug {
+			
+		let string: String = parser.clone().take_while(|character| character.is_alphabetic()).collect();
 
-		if string.is_empty() { Err(()) }
+		if string.is_empty() { Err(Unexpected::from(parser.clone())) }
 
 		else {
 
-			iterator.advance_by(string.len());
+			parser.advance_by(string.len());
 
 			Ok(Letters(string))
 
