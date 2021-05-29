@@ -8,6 +8,7 @@
 #![feature(const_generics)]
 #![doc = include_str!("../README.md")]
 #![feature(iter_advance_by)]
+#![feature(in_band_lifetimes)]
 
 mod expect;
 mod letters;

@@ -1,19 +1,37 @@
 use std::any::type_name;
+use std::borrow::BorrowMut;
 use std::fmt::Display;
 use std::fmt::Debug;
 use std::fmt::format;
+use std::iter::FromIterator;
 use std::ops::Range;
+use std::str::Chars;
 
 use crate::*;
-
-/// A `Iterator<Item = char>` struct for parsing. 
+  
+/// Struct to facilitate parsing.
 #[derive(Clone, Debug)]
 pub struct Parser {
 
-	pub(crate) string: String,
-	pub(crate) index: usize,
-	pub(crate) history: Vec<String>
+	pub input: String,
+	pub history: Vec<String>,
+	pub index: usize
 
+}
+
+impl<T : Display> From<T> for Parser {
+
+	fn from(other: T) -> Self {
+		
+		Parser {
+
+			input: other.to_string(),
+			history: Vec::default(),
+			index: 0
+
+		}
+
+	}
 
 }
 
@@ -23,7 +41,7 @@ impl Iterator for Parser {
 
 	fn next(&mut self) -> Option<Self::Item> {
 		
-		let result = self.string.chars().nth(self.index);
+		let result = self.input.chars().nth(self.index);
 		
 		self.index += 1;
 
@@ -34,21 +52,6 @@ impl Iterator for Parser {
 }
 
 
-impl<T : Display> From<T> for Parser {
-
-	fn from(other: T) -> Self {
-		
-		Parser {
-
-			string: other.to_string(),
-			index: 0,
-			history: Vec::default()
-
-		}
-
-	}
-
-} 
 
 impl Parser {
 
@@ -59,6 +62,24 @@ impl Parser {
 		
 		T::expect_from(self)
 	
+	}
+	
+	pub fn input(&self) -> String {
+
+		self.input.to_string()
+
+	}
+
+	pub fn index(&self) -> usize {
+
+		self.index
+
+	}
+
+	pub fn history(&self) -> Vec<String> {
+
+		self.history.clone()
+
 	}
 
 }

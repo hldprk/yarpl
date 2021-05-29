@@ -35,7 +35,7 @@ impl Display for Unexpected {
 
 		let mut start_of_line = 0;
 
-		for character in self.parser.string.chars() {
+		for character in self.parser.input.chars() {
 
 			if character == '\n' { 
 				
@@ -53,7 +53,7 @@ impl Display for Unexpected {
 
 		let position_in_line = self.parser.index - start_of_line;
 
-		write!(f, "Expected {} at character {} on line {}.", self.parser.history.clone().pop().unwrap(), position_in_line, line_number)
+		write!(f, "Expected '{}' at character {} on line {}.", self.parser.history.clone().pop().unwrap(), position_in_line, line_number)
 
 	}
 

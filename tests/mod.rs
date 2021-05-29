@@ -33,7 +33,7 @@ mod tests {
 
 	#[test]
 	fn expect_just() {
-
+		
 		assert!(Just::<"yeah">::expect_from(&mut Parser::from("yeahnah")).is_ok());
 
 	}
@@ -65,11 +65,13 @@ mod tests {
 	#[test]
 	fn expect_error() {
 
+		type D = Just::<"d">;
+
 		let ref mut parser = Parser::from("abc");
 
 		let _ = parser.expect::<Just<"a">>();
 		let _ = parser.expect::<Just<"b">>();
-		let result = parser.expect::<Just<"d">>();
+		let result = parser.expect::<D>();
 
 		println!("{}", result.unwrap_err())
 
