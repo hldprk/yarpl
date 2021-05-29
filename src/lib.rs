@@ -18,6 +18,10 @@ mod just;
 mod parser;
 mod unexpected;
 mod result;
+mod must;
+mod over;
+mod under;
+mod maybe;
 
 pub use expect::Expect;
 pub use letters::Letters;
@@ -28,3 +32,6 @@ pub use just::Just;
 pub use unexpected::Unexpected;
 pub use parser::Parser;
 pub use result::Result;
+pub use over::Over;
+pub use under::Under;
+pub use maybe::Maybe;

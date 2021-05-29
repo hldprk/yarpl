@@ -5,23 +5,15 @@ use std::fmt::Formatter;
 
 use crate::*;
 
-/// Parsed from an `Iterator` pointing to a whole or decimal number.
+/// Returns a `String` of one or more decimal digit characters when parsed.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Number(pub(crate) String);
-
-impl Display for Number {
-
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		
-		write!(f, "{}", self.0)
-
-	}
-
-}
+pub struct Number;
 
 impl Expect for Number {
 
-	fn expect_from(parser: &mut Parser) -> Result<Self>
+	type Target = String;
+
+	fn expect_from(parser: &mut Parser) -> Result<Self::Target>
 	where Self : Sized + Debug {
 			
 		let first_digits_maybe = Digits::expect_from(parser);
@@ -46,7 +38,7 @@ impl Expect for Number {
 			
 			let number_string = first_digits.to_string() + "." + &second_digits.to_string();
 
-			Ok(Number(number_string))
+			Ok(number_string)
 
 		} else {
 

@@ -4,14 +4,15 @@ use std::fmt::Debug;
 
 use crate::*;
 
-/// Used by a `Parser` to match a specific, provided string.
+/// A generic way to parse a specific string.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Just<const STRING: &'static str>;
 
 impl<const STRING: &'static str> Expect for Just<STRING> {
 
-	fn expect_from(parser: &mut Parser) -> Result<Self>
-	where Self : Sized + Debug {
+	type Target = &'static str;
+
+	fn expect_from(parser: &mut Parser) -> Result<Self::Target> {
 			
 		let cloned_iterator = parser.clone();
 
@@ -21,7 +22,7 @@ impl<const STRING: &'static str> Expect for Just<STRING> {
 
 			parser.advance_by(STRING.len());
 
-			Ok(Just::<STRING>)
+			Ok(STRING)
 
 		} else {
 
@@ -29,16 +30,6 @@ impl<const STRING: &'static str> Expect for Just<STRING> {
 
 		}
 		
-	}
-
-}
-
-impl<const STRING: &'static str> Display for Just<STRING> {
-
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		
-		write!(f, "{}", STRING)
-
 	}
 
 }

@@ -4,14 +4,15 @@ use std::fmt::Formatter;
 
 use crate::*;
 
-/// Parsed from a `Parser` pointing to one or more alphabetic characters.
+/// Parses a `String` of one or more alphabetic characters.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Letters(pub(crate) String);
+pub struct Letters;
 
 impl Expect for Letters {
 
-	fn expect_from(parser: &mut Parser) -> Result<Self>
-	where Self : Sized + Debug {
+	type Target = String;
+
+	fn expect_from(parser: &mut Parser) -> Result<Self::Target> {
 			
 		let string: String = parser.clone().take_while(|character| character.is_alphabetic()).collect();
 
@@ -21,7 +22,7 @@ impl Expect for Letters {
 
 			parser.advance_by(string.len());
 
-			Ok(Letters(string))
+			Ok(string)
 
 		}
 	
@@ -29,12 +30,3 @@ impl Expect for Letters {
 
 }
 
-impl Display for Letters {
-
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		
-		write!(f, "{}", self.0)
-
-	}
-
-}

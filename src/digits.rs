@@ -4,13 +4,16 @@ use std::fmt::Formatter;
 
 use crate::*;
 
-/// Parsed from an `Iterator` pointing to one or more digits.
+/// When parsed, returns a `String` of one or more digits.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Digits(pub(crate) String);
+pub struct Digits;
 
 impl Expect for Digits {
 
-	fn expect_from(parser: &mut Parser) -> Result<Self>
+	
+	type Target = String;
+
+	fn expect_from(parser: &mut Parser) -> Result<Self::Target>
 	where Self : Sized + Debug {
 
 		let cloned_iterator = parser.clone();
@@ -23,19 +26,9 @@ impl Expect for Digits {
 
 			parser.advance_by(string.len());
 
-			Ok(Digits(string))
+			Ok(string)
 
 		}
-
-	}
-
-}
-
-impl Display for Digits {
-
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		
-		write!(f, "{}", self.0)
 
 	}
 

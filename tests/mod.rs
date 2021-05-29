@@ -56,18 +56,22 @@ mod tests {
 	#[test]
 	fn expect_type_alias() {
 		
-		type Newline = Just::<"asdf">;
+		type Newline = Just::<"\n">;
 		
-		assert!(Parser::from("asdf").expect::<Newline>().is_ok());
+		assert!(Parser::from("\n").expect::<Newline>().is_ok());
 		
 	}
 	
 	#[test]
-	fn expect_many() {
+	fn expect_error() {
 
-		let ref mut parser = Parser::from("aaaa");
+		let ref mut parser = Parser::from("abc");
 
-		println!("{}", parser.expect_many::<Just<"a">>(5..6).unwrap_err());
+		let _ = parser.expect::<Just<"a">>();
+		let _ = parser.expect::<Just<"b">>();
+		let result = parser.expect::<Just<"d">>();
+
+		println!("{}", result.unwrap_err())
 
 	}
 

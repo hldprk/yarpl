@@ -8,43 +8,58 @@ use std::any::Any;
 
 /// An `Error` type returned from a failed parse.
 #[derive(Debug, Clone)]
-pub struct Unexpected<T> {
+pub struct Unexpected {
 	 
 	parser: Parser,
-	phantom_data: PhantomData<T>
-	
+
 }
 
 
-impl<T> From<Parser> for Unexpected<T> {
+impl From<Parser> for Unexpected {
 
 	fn from(parser: Parser) -> Self {
 		
-		Self {
+		Self { parser }
 
-			parser,
-			phantom_data: PhantomData::<T>
+	}
+
+}
+
+impl Display for Unexpected {
+
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+
+		let mut i = 0;
+		
+		let mut line_number = 0;
+
+		let mut start_of_line = 0;
+
+		for character in self.parser.string.chars() {
+
+			if character == '\n' { 
+				
+				line_number += 1; 
+			
+				start_of_line = self.parser.index;
+
+			}
+
+			if i == self.parser.index { break }
+
+			else { i+= 1; }
 
 		}
 
-	}
+		let position_in_line = self.parser.index - start_of_line;
 
-}
-
-impl<T : Any + 'static> Display for Unexpected<T> {
-
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		
-
-
-
-		write!(f, "Expected {} at {}.", type_name::<T>(), self.parser.index)
+		write!(f, "Expected {} at character {} on line {}.", self.parser.history.clone().pop().unwrap(), position_in_line, line_number)
 
 	}
 
 }
 
-impl<T : Any + Debug + 'static> std::error::Error for Unexpected<T> {
+impl std::error::Error for Unexpected {
 
 	fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
 
