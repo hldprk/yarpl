@@ -15,6 +15,10 @@ impl Expect for Number {
 
 	fn expect_from(parser: &mut Parser) -> Result<Self::Target>
 	where Self : Sized + Debug {
+
+		let was_skipping_whitespace = parser.should_skip_whitespace;
+
+		parser.should_skip_whitespace = true;
 			
 		let first_digits_maybe = Digits::expect_from(parser);
 
@@ -31,6 +35,8 @@ impl Expect for Number {
 			"0".to_string()
 		
 		}; 
+
+		parser.should_skip_whitespace = was_skipping_whitespace;
 
 		if first_digits_maybe.is_ok() {
 

@@ -35,25 +35,25 @@ impl Display for Unexpected {
 
 		let mut start_of_line = 0;
 
-		for character in self.parser.input.chars() {
+		for character in self.parser.input().chars() {
 
 			if character == '\n' { 
 				
 				line_number += 1; 
 			
-				start_of_line = self.parser.index;
+				start_of_line = self.parser.index();
 
 			}
 
-			if i == self.parser.index { break }
+			if i == self.parser.index() { break }
 
 			else { i+= 1; }
 
 		}
 
-		let position_in_line = self.parser.index - start_of_line;
+		let position_in_line = self.parser.index() - start_of_line;
 
-		write!(f, "Expected '{}' at character {} on line {}.", self.parser.history.clone().pop().unwrap(), position_in_line, line_number)
+		write!(f, "Expected '{}' at character {} on line {}.", self.parser.history().clone().pop().unwrap(), position_in_line, line_number)
 
 	}
 

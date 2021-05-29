@@ -41,8 +41,8 @@ mod tests {
 	#[test]
 	fn expect_maybe() {
 		
-		//assert!(Just::<"yeah">::maybe_expect_from(&mut Parser::from("asdf")).is_ok());
-		//assert!(Just::<"yeah">::maybe_expect_from(&mut Parser::from("yeah")).is_ok());
+		assert!(Maybe::<Just::<"yeah">>::expect_from(&mut Parser::from("asdf")).is_ok());
+		assert!(Maybe::<Just::<"yeah">>::expect_from(&mut Parser::from("yeah")).is_ok());
 
 	}
 
@@ -63,17 +63,33 @@ mod tests {
 	}
 	
 	#[test]
-	fn expect_error() {
-
+	fn display_error() {
+		
 		type D = Just::<"d">;
-
+		
 		let ref mut parser = Parser::from("abc");
-
+		
 		let _ = parser.expect::<Just<"a">>();
 		let _ = parser.expect::<Just<"b">>();
 		let result = parser.expect::<D>();
-
+		
 		println!("{}", result.unwrap_err())
+		
+	}
+	
+	#[test]
+	fn skip_whitespace () {
+		
+		let ref mut parser = Parser::from("abc 123");
+		
+		parser.should_skip_whitespace = true;
+
+		let letters_maybe = parser.expect::<Letters>();
+
+		let number_maybe = parser.expect::<Number>();
+
+		assert!(letters_maybe.is_ok());
+		assert!(number_maybe.is_ok());
 
 	}
 

@@ -13,9 +13,10 @@ use crate::*;
 #[derive(Clone, Debug)]
 pub struct Parser {
 
-	pub input: String,
-	pub history: Vec<String>,
-	pub index: usize
+	input: String,
+	history: Vec<String>,
+	index: usize,
+	pub should_skip_whitespace: bool
 
 }
 
@@ -27,7 +28,8 @@ impl<T : Display> From<T> for Parser {
 
 			input: other.to_string(),
 			history: Vec::default(),
-			index: 0
+			index: 0,
+			should_skip_whitespace: false 
 
 		}
 
@@ -60,8 +62,14 @@ impl Parser {
 
 		self.history.push(type_name::<T>().to_string());
 		
-		T::expect_from(self)
-	
+		if self.should_skip_whitespace { Maybe::<Spaces>::expect_from(self); }
+		
+		let result = T::expect_from(self);
+		
+		if self.should_skip_whitespace && result.is_ok() { Maybe::<Spaces>::expect_from(self); }
+
+		result
+
 	}
 	
 	pub fn input(&self) -> String {
@@ -72,6 +80,7 @@ impl Parser {
 
 	pub fn index(&self) -> usize {
 
+	
 		self.index
 
 	}
