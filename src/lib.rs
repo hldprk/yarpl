@@ -4,35 +4,32 @@
 #![allow(dead_code)]
 #![allow(incomplete_features)]
 #![allow(unused_imports)]
+
 #![feature(extended_key_value_attributes)]
 #![feature(const_generics)]
-#![doc = include_str!("../README.md")]
 #![feature(iter_advance_by)]
-#![feature(in_band_lifetimes)]
 
-mod expect;
-mod letters;
-mod digits;
-mod spaces;
-mod number;
-mod just;
+#![doc = include_str!("../README.md")]
+
+mod parse;
+mod error;
 mod parser;
-mod unexpected;
 mod result;
-mod must;
-mod over;
-mod under;
+mod either;
+mod many;
 mod maybe;
+mod must;
+mod literal;
+mod pretty_type_name;
 
-pub use expect::Expect;
-pub use letters::Letters;
-pub use digits::Digits;
-pub use spaces::Spaces;
-pub use number::Number;
-pub use just::Just;
-pub use unexpected::Unexpected;
+use pretty_type_name::pretty_type_name;
+
 pub use parser::Parser;
+pub use parse::Parse;
+pub use error::Error;
 pub use result::Result;
-pub use over::Over;
-pub use under::Under;
+pub use either::Either;
+pub use many::Many;
 pub use maybe::Maybe;
+pub use must::Must;
+pub use literal::Literal;

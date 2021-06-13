@@ -1,35 +1,35 @@
+use std::any::Any;
 use std::any::type_name;
-use std::borrow::BorrowMut;
+use std::clone;
 use std::fmt::Display;
 use std::fmt::Debug;
 use std::fmt::format;
 use std::iter::FromIterator;
 use std::ops::Range;
 use std::str::Chars;
+use std::usize;
 
 use crate::*;
-  
-/// Struct to facilitate parsing.
-#[derive(Clone, Debug)]
-pub struct Parser {
 
-	input: String,
-	history: Vec<String>,
-	index: usize,
-	pub should_skip_whitespace: bool
+/// Is used to parse things.
+#[derive(Clone, Debug)]
+pub struct Parser<'a> {
+
+	input: &'a str,
+	pub(crate)iterator: Chars<'a>,
+	strict_mode: bool
 
 }
 
-impl<T : Display> From<T> for Parser {
+impl<'a> From<&'a str> for Parser<'a> {
 
-	fn from(other: T) -> Self {
+	fn from(input: &'a str) -> Self {
 		
 		Parser {
 
-			input: other.to_string(),
-			history: Vec::default(),
-			index: 0,
-			should_skip_whitespace: false 
+			input,
+			iterator: input.chars(),
+			strict_mode: true
 
 		}
 
@@ -37,59 +37,81 @@ impl<T : Display> From<T> for Parser {
 
 }
 
-impl Iterator for Parser {
 
-	type Item = char;
+impl<'a> Parser<'a> {
 
-	fn next(&mut self) -> Option<Self::Item> {
+	/// Parses `T : FromStr` from the given input.
+	pub fn parse<T: Parse>(&mut self) -> Result<T::Target> {
+
+		type Spaces = Many<Either<"\t\n\r ">>;
+
+		let ref mut cloned_parser = self.clone();
+
+		if !(self.strict_mode) { let _ = Maybe::<Spaces>::parse_from(cloned_parser); }
 		
-		let result = self.input.chars().nth(self.index);
+		let result = T::parse_from(cloned_parser);
 		
-		self.index += 1;
-
+		if !(self.strict_mode) { let _ = Maybe::<Spaces>::parse_from(cloned_parser); }
+		
+		if result.is_ok() { self.clone_from(cloned_parser); } 
+		
 		result
 
 	}
 
-}
+	/// Returns the entire input string.
+	pub fn input(&self) -> &'a str {
 
-
-
-impl Parser {
-
-	/// If the type `T : Expect` can be parsed from the source string, returns `Ok(T::Target)`.   
-	pub fn expect<T: Expect>(&mut self) -> Result<T::Target> {
-
-		self.history.push(type_name::<T>().to_string());
-		
-		if self.should_skip_whitespace { Maybe::<Spaces>::expect_from(self); }
-		
-		let result = T::expect_from(self);
-		
-		if self.should_skip_whitespace && result.is_ok() { Maybe::<Spaces>::expect_from(self); }
-
-		result
-
-	}
-	
-	pub fn input(&self) -> String {
-
-		self.input.to_string()
+		self.input
 
 	}
 
+	/// Returns the current index of this `Parser`.
 	pub fn index(&self) -> usize {
 
-	
-		self.index
+ 		self.iterator.clone().rev().count()
 
 	}
 
-	pub fn history(&self) -> Vec<String> {
+	/// Returns the current line number.
+	pub fn line(&self) -> usize {
+		
+		let enumerated = self.input.char_indices();
 
-		self.history.clone()
+		let mut result = 0;
+
+		for (i, character) in enumerated {
+
+			if character == '\n' { result += 1; }
+			
+			if i > self.index() { break; }
+
+		}
+
+		if result == 0 { result } else { result - 1 }
 
 	}
+
+	/// The current position within the current line.
+	pub fn column(&self) -> usize {
+
+		let beginning_reversed = self.input.clone().split_at(self.index()).1.chars().rev().collect::<String>();
+
+		beginning_reversed.chars().position(|c| c == '\n').unwrap_or(0)
+		
+	}
+
+	pub fn enable_strict_mode(&mut self) {
+		
+		self.strict_mode = true;
+		
+	} 
+
+	pub fn disable_strict_mode(&mut self) {
+
+		self.strict_mode = false;
+
+	}
+
 
 }
-

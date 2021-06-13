@@ -10,89 +10,80 @@ mod tests {
 
 	use yarpl::*;
 
-	#[test]
-	fn expect_letters() {
+	type Letters = Many<Either<"abcdefghijklmnopqrstuvwxyz">>;
+	type Digits = Many<Either<"0123456789">>;
 
-		assert!(Letters::expect_from(&mut Parser::from("asdf")).is_ok());
+	#[test]
+	fn parse_letters() {
+
+		let ref mut parser = Parser::from("asdf");
+
+		assert!(parser.parse::<Letters>().is_ok());
 
 	}
 
 	#[test]
-	fn expect_digits() {
+	fn parse_digits() {
 
-		assert!(Digits::expect_from(&mut Parser::from("123asdf")).is_ok());
+		let ref mut parser = Parser::from("1234asdf");
+
+		assert!(parser.parse::<Digits>().is_ok());
+	}
+
+
+	#[test]
+	fn parse_literal() {
+		
+		type AAAA = Literal<"aaaa">;
+
+		let ref mut parser = Parser::from("asdf    \naaaa");
+
+		parser.disable_strict_mode();
+
+		let result = parser.parse::<Literal<"safaffsda">>();
+		let _ = parser.parse::<AAAA>();
+
+
+		if result.is_err() {
+
+			println!("{}", result.unwrap_err())
+
+		}
 
 	}
 
 	#[test]
-	fn expect_space() {
-
-		assert!(Spaces::expect_from(&mut Parser::from("\t\n  ")).is_ok());
-
-	}
-
-	#[test]
-	fn expect_just() {
+	fn parse_maybe() {
 		
-		assert!(Just::<"yeah">::expect_from(&mut Parser::from("yeahnah")).is_ok());
+		let ref mut parser = Parser::from("asdf");
+		let ref mut other_parser = parser.clone();
+
+		assert!(parser.parse::<Maybe::<Literal<"asdf">>>().is_ok());
+		assert!(other_parser.parse::<Maybe::<Literal<"yeah">>>().is_ok());
 
 	}
 
-	#[test]
-	fn expect_maybe() {
-		
-		assert!(Maybe::<Just::<"yeah">>::expect_from(&mut Parser::from("asdf")).is_ok());
-		assert!(Maybe::<Just::<"yeah">>::expect_from(&mut Parser::from("yeah")).is_ok());
-
-	}
 
 	#[test]
-	fn expect_number() {
-
-		assert!(Number::expect_from(&mut Parser::from("1234.5678")).is_ok());
+	fn parse_type_alias() {
 		
-	}
-
-	#[test]
-	fn expect_type_alias() {
+		type Newline = Literal::<"\n">;
 		
-		type Newline = Just::<"\n">;
-		
-		assert!(Parser::from("\n").expect::<Newline>().is_ok());
-		
-	}
-	
-	#[test]
-	fn display_error() {
-		
-		type D = Just::<"d">;
-		
-		let ref mut parser = Parser::from("abc");
-		
-		let _ = parser.expect::<Just<"a">>();
-		let _ = parser.expect::<Just<"b">>();
-		let result = parser.expect::<D>();
-		
-		println!("{}", result.unwrap_err())
+		assert!(Parser::from("\n").parse::<Newline>().is_ok());
 		
 	}
 	
 	#[test]
-	fn skip_whitespace () {
+	fn parse_either() {
 		
-		let ref mut parser = Parser::from("abc 123");
+		type Yeah = Either<"0123456789">;
 		
-		parser.should_skip_whitespace = true;
-
-		let letters_maybe = parser.expect::<Letters>();
-
-		let number_maybe = parser.expect::<Number>();
-
-		assert!(letters_maybe.is_ok());
-		assert!(number_maybe.is_ok());
-
-	}
-
+		let ref mut parser = Parser::from("823813");
+	
+		assert!(parser.parse::<Yeah>().is_ok());
+		
+	} 
+	
 	
 }
 

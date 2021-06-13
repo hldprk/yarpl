@@ -1,6 +1,6 @@
 [package]
 name = "yarpl"
-version = "0.0.21"
+version = "0.0.23"
 authors = ["hldprk <hldprk@gmail.com>"]
 edition = "2018"
 description = "Yet Another Rust Parsing Library"
@@ -13,3 +13,5 @@ repository = "https://github.com/hldprk/yarpl"
 [lib]
 
 [dependencies]
+regex = "1.5.4"
+colored = "2.0.0"

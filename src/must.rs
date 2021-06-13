@@ -3,25 +3,24 @@ use std::fmt::Debug;
 
 use crate::*;
 
-/// Used to propogate the result of a parse without the `Parser` consuming input.
+/// Returns `Ok(())` if successful, `Err(Error)` otherwise. Doesn't consume input.
 #[derive(Debug, Clone, Copy, Default)]
-pub struct Must<T : Expect> {
+pub struct Must<T : Parse> {
 
-	phantom_data: PhantomData<T>
+	phantom_data: PhantomData<T>,
 
 }
 
-impl<T : Expect> Expect for Must<T> {
+impl<T : Parse> Parse for Must<T> {
 
 	type Target = ();
 
-	fn expect_from(parser: &mut Parser) -> Result<Self::Target>
-	where Self : Sized + Debug {
+	fn parse_from(parser: &mut Parser) -> Result<Self::Target> {
 		
-		match parser.clone().expect::<T>() {
+		match parser.clone().parse::<T>() {
 
 			Ok(_) => Ok(()),
-			Err(_) => Err(Unexpected::from(parser.clone()))
+			Err(_) => Err(Error::new::<Self>(parser))
 
 		}
 

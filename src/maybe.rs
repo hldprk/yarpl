@@ -1,24 +1,25 @@
 use std::marker::PhantomData;
+use std::fmt::Debug;
 
 pub use crate::*;
 
 /// Returns `Ok(Some(Self::Target))` if parsed successfully, `Ok(None)` otherwise. 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Maybe<T : Expect> { phantom_data: PhantomData<T> }
+pub struct Maybe< T : Parse> { phantom_data: PhantomData<T> }
 
-impl<T : Expect> Expect for Maybe<T> {
+impl<T : Parse> Parse for Maybe<T> {
 
 	type Target = Option<T::Target>;
 
-	fn expect_from(parser: &mut Parser) -> Result<Self::Target> {
+	fn parse_from(parser: &mut Parser) -> Result<Self::Target> {
 		
-		let succeeds = T::expect_from(&mut parser.clone()).is_ok();
+		let ref mut cloned_parser = parser.clone();
 
-		if succeeds {
+		let result = T::parse_from(cloned_parser);
+		
+		if result.is_ok() {
 
-			let expected = T::expect_from(parser).unwrap();
-
-			Ok(Some(expected))
+			Ok(Some(T::parse_from(parser).unwrap()))
 			
 		}
 		

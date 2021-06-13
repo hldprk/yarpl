@@ -1,7 +1,5 @@
 use std::fmt::Debug;
-use crate::Expect;
-use crate::Parser;
-use crate::Unexpected;
+use crate::*;
 
-/// An alias for `Result` which is returned from `Parser::expect`.
-pub type Result<T> = std::result::Result<T, Unexpected>;
+/// The type returned from `Parser::parse`.
+pub type Result<T> = std::result::Result<T, Error>;
